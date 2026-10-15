@@ -1,0 +1,204 @@
+.o_tt {
+    --tt-plane: #f6f6f4;
+    --tt-surface: #ffffff;
+    --tt-ink: #0b0b0b;
+    --tt-ink-2: #52514e;
+    --tt-muted: #898781;
+    --tt-hairline: rgba(11, 11, 11, 0.08);
+    --tt-accent: #2a78d6;
+
+    height: 100%;
+    overflow: auto;
+    padding: 24px;
+    background: var(--tt-plane);
+    color: var(--tt-ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    .o_tt_header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .o_tt_title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    .o_tt_subtitle {
+        color: var(--tt-ink-2);
+        margin-top: 2px;
+    }
+    .o_tt_filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        select {
+            width: auto;
+            min-width: 180px;
+        }
+        .o_tt_year {
+            min-width: 110px;
+        }
+    }
+    .o_tt_empty {
+        padding: 48px 16px;
+        text-align: center;
+        color: var(--tt-muted);
+        background: var(--tt-surface);
+        border: 1px solid var(--tt-hairline);
+        border-radius: 12px;
+    }
+
+    .o_tt_scroll {
+        overflow-x: auto;
+        background: var(--tt-surface);
+        border: 1px solid var(--tt-hairline);
+        border-radius: 12px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        transition: opacity 0.15s ease;
+        &.o_tt_loading {
+            opacity: 0.6;
+        }
+    }
+    .o_tt_grid {
+        display: grid;
+        min-width: 820px;
+        gap: 6px;
+        padding: 12px;
+    }
+
+    // Header row
+    .o_tt_day {
+        padding: 8px 10px;
+        font-weight: 600;
+        text-align: center;
+        color: var(--tt-ink-2);
+        border-bottom: 2px solid var(--tt-hairline);
+        &.o_tt_today {
+            color: var(--tt-accent);
+            border-bottom-color: var(--tt-accent);
+        }
+    }
+    .o_tt_today_badge {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 0 6px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        background: rgba(42, 120, 214, 0.12);
+        color: var(--tt-accent);
+        vertical-align: middle;
+    }
+
+    // Period column
+    .o_tt_time {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 6px 8px;
+        min-height: 72px;
+        border-right: 1px solid var(--tt-hairline);
+        &.o_tt_time_break {
+            min-height: 0;
+        }
+    }
+    .o_tt_period_name {
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .o_tt_period_time {
+        color: var(--tt-muted);
+        font-size: 0.78rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    // Break band
+    .o_tt_break {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 6px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--tt-muted);
+        background: repeating-linear-gradient(
+            135deg,
+            rgba(11, 11, 11, 0.03) 0 6px,
+            transparent 6px 12px
+        );
+    }
+
+    // Lesson card
+    .o_tt_lesson {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        min-height: 72px;
+        padding: 8px 10px;
+        text-align: left;
+        border: 0;
+        border-left: 4px solid var(--tt-tone);
+        border-radius: 8px;
+        background: var(--tt-tone-bg);
+        color: var(--tt-ink);
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        &:focus-visible {
+            outline: 2px solid var(--tt-accent);
+            outline-offset: 2px;
+        }
+    }
+    .o_tt_subject {
+        font-weight: 600;
+        font-size: 0.9rem;
+        line-height: 1.2;
+    }
+    .o_tt_meta {
+        font-size: 0.78rem;
+        color: var(--tt-ink-2);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        i {
+            width: 12px;
+            color: var(--tt-muted);
+        }
+    }
+
+    // Empty slot
+    .o_tt_free {
+        min-height: 72px;
+        border: 1px dashed var(--tt-hairline);
+        border-radius: 8px;
+        background: transparent;
+        color: transparent;
+        transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+        &:not(.o_tt_free_ro):hover,
+        &:not(.o_tt_free_ro):focus-visible {
+            border-color: var(--tt-accent);
+            background: rgba(42, 120, 214, 0.05);
+            color: var(--tt-accent);
+        }
+    }
+
+    // Subject tones: tinted card + solid edge; the subject name carries identity.
+    $tones: #2a78d6, #eb6834, #1baf7a, #eda100, #e87ba4, #008300, #6250d6, #e34948, #0f8a8a, #9a6b3f;
+    @for $i from 0 through 9 {
+        .o_tt_tone_#{$i} {
+            --tt-tone: #{nth($tones, $i + 1)};
+            --tt-tone-bg: #{rgba(nth($tones, $i + 1), 0.10)};
+        }
+    }
+}

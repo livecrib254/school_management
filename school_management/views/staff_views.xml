@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Staff roles (configuration) -->
+    <record id="view_school_staff_role_list" model="ir.ui.view">
+        <field name="name">school.staff.role.list</field>
+        <field name="model">school.staff.role</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="staff_type"/>
+                <field name="employee_count"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_staff_role_search" model="ir.ui.view">
+        <field name="name">school.staff.role.search</field>
+        <field name="model">school.staff.role</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="teaching" string="Teaching" domain="[('staff_type', '=', 'teaching')]"/>
+                <filter name="support" string="Non-Teaching" domain="[('staff_type', '=', 'support')]"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_type" string="Category" context="{'group_by': 'staff_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_staff_role" model="ir.actions.act_window">
+        <field name="name">Staff Roles</field>
+        <field name="res_model">school.staff.role</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_type': 1}</field>
+    </record>
+
+    <!-- Dedicated staff views over hr.employee; the standard HR forms are left untouched. -->
+    <record id="view_school_staff_list" model="ir.ui.view">
+        <field name="name">school.staff.list</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="school_role_id"/>
+                <field name="school_staff_type" optional="hide"/>
+                <field name="tsc_number" optional="show"/>
+                <field name="work_phone" optional="show"/>
+                <field name="mobile_phone" optional="hide"/>
+                <field name="work_email" optional="show"/>
+                <field name="teaching_subject_ids" widget="many2many_tags" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_staff_form" model="ir.ui.view">
+        <field name="name">school.staff.form</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Staff member name"/></h1>
+                    </div>
+                    <group>
+                        <group string="School">
+                            <field name="school_role_id" required="1" options="{'no_create': True}"/>
+                            <field name="school_staff_type"/>
+                            <field name="tsc_number" invisible="not is_teacher"/>
+                            <field name="job_title"/>
+                            <field name="department_id"/>
+                            <field name="is_teacher" invisible="1"/>
+                        </group>
+                        <group string="Contact">
+                            <field name="work_phone" widget="phone"/>
+                            <field name="mobile_phone" widget="phone"/>
+                            <field name="work_email" widget="email"/>
+                            <field name="identification_id" string="National ID No."/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Teaching" name="teaching" invisible="not is_teacher">
+                            <group>
+                                <field name="teaching_subject_ids" widget="many2many_tags"/>
+                            </group>
+                            <field name="taught_class_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="year_id"/>
+                                    <field name="student_count"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_school_staff_search" model="ir.ui.view">
+        <field name="name">school.staff.search</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', '|', ('name', 'ilike', self), ('tsc_number', 'ilike', self), ('work_email', 'ilike', self)]"
+                       string="Name / TSC No. / Email"/>
+                <field name="school_role_id"/>
+                <field name="teaching_subject_ids"/>
+                <filter name="teaching" string="Teaching Staff" domain="[('school_staff_type', '=', 'teaching')]"/>
+                <filter name="support" string="Non-Teaching Staff" domain="[('school_staff_type', '=', 'support')]"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_type" string="Category" context="{'group_by': 'school_staff_type'}"/>
+                    <filter name="group_role" string="Role" context="{'group_by': 'school_role_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_school_staff" model="ir.actions.act_window">
+        <field name="name">All Staff</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_school_staff', '=', True)]</field>
+        <field name="context">{'search_default_group_type': 1}</field>
+        <field name="search_view_id" ref="view_school_staff_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_school_staff_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_school_staff_form')})]"/>
+    </record>
+    <record id="action_school_teacher" model="ir.actions.act_window">
+        <field name="name">Teachers</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_teacher', '=', True)]</field>
+        <field name="context" eval="{'default_school_role_id': ref('staff_role_teacher')}"/>
+        <field name="search_view_id" ref="view_school_staff_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_school_staff_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_school_staff_form')})]"/>
+    </record>
+    <record id="action_school_support_staff" model="ir.actions.act_window">
+        <field name="name">Non-Teaching Staff</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('school_staff_type', '=', 'support')]</field>
+        <field name="context">{'search_default_group_role': 1}</field>
+        <field name="search_view_id" ref="view_school_staff_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_school_staff_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_school_staff_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a non-teaching staff member</p>
+            <p>Librarians, matrons, patrons, drivers, bursars, cooks, security and other support staff. Roles are managed under Configuration &gt; Staff Roles.</p>
+        </field>
+    </record>
+</odoo>

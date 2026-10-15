@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_fee_statement" model="ir.actions.report">
+        <field name="name">Fee Statement</field>
+        <field name="model">school.student</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">school_management.report_fee_statement</field>
+        <field name="report_file">school_management.report_fee_statement</field>
+        <field name="print_report_name">'Fee Statement - %s' % object.name</field>
+        <field name="binding_model_id" ref="model_school_student"/>
+        <field name="binding_type">report</field>
+        <field name="group_ids" eval="[(4, ref('group_school_accountant'))]"/>
+    </record>
+
+    <template id="report_fee_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <t t-set="ledger" t-value="o._school_fee_ledger()"/>
+                    <t t-set="entries" t-value="ledger[0]"/>
+                    <t t-set="closing" t-value="ledger[1]"/>
+                    <t t-set="currency" t-value="o.currency_id"/>
+                    <div class="page">
+                        <h4 t-if="o.company_id.school_name" class="text-center mb-1" t-out="o.company_id.school_name"/>
+                        <h3 class="text-center mb-3">Fee Statement</h3>
+                        <table class="table table-sm table-borderless mb-3">
+                            <tr>
+                                <td><strong>Student:</strong> <span t-field="o.name"/></td>
+                                <td><strong>Admission No.:</strong> <span t-field="o.admission_no"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Class:</strong> <span t-out="o.class_id.name or '-'"/></td>
+                                <td><strong>Date:</strong> <span t-out="datetime.date.today().strftime('%d/%m/%Y')"/></td>
+                            </tr>
+                            <tr t-if="o.billing_partner_id">
+                                <td colspan="2"><strong>Billed to:</strong> <span t-out="o.billing_partner_id.name"/></td>
+                            </tr>
+                        </table>
+
+                        <p t-if="not entries" class="text-muted">No fee invoices or payments yet.</p>
+                        <table t-else="" class="table table-sm table-bordered" style="font-size: 12px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 12%;">Date</th>
+                                    <th style="width: 18%;">Reference</th>
+                                    <th>Description</th>
+                                    <th class="text-end" style="width: 13%;">Charged</th>
+                                    <th class="text-end" style="width: 13%;">Paid</th>
+                                    <th class="text-end" style="width: 14%;">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="entries" t-as="entry" style="page-break-inside: avoid;">
+                                    <td t-out="entry['date'].strftime('%d/%m/%Y')"/>
+                                    <td t-out="entry['ref']"/>
+                                    <td t-out="entry['description']"/>
+                                    <td class="text-end">
+                                        <span t-if="entry['debit']" t-out="entry['debit']"
+                                              t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-if="entry['credit']" t-out="entry['credit']"
+                                              t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-out="entry['balance']"
+                                              t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="row">
+                            <div class="col-6 offset-6">
+                                <table class="table table-sm">
+                                    <tr class="fw-bold">
+                                        <td>
+                                            <t t-if="closing &lt; 0">Account in credit</t>
+                                            <t t-else="">Balance due</t>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-out="abs(closing)"
+                                                  t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <p class="text-muted small">
+                            Pay to the school with the admission number as the reference.
+                            A credit balance is applied to the next term's fees.
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

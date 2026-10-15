@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- CBC: KNEC 8-level performance scale -->
+    <record id="scale_cbc" model="school.grade.scale">
+        <field name="name">CBC Performance Levels (8-point)</field>
+        <field name="education_system">cbc</field>
+    </record>
+    <record id="scale_cbc_ee1" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_cbc"/><field name="grade">EE1</field>
+        <field name="min_mark">90</field><field name="points">8</field><field name="descriptor">Exceeds Expectations</field>
+    </record>
+    <record id="scale_cbc_ee2" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_cbc"/><field name="grade">EE2</field>
+        <field name="min_mark">75</field><field name="points">7</field><field name="descriptor">Exceeds Expectations</field>
+    </record>
+    <record id="scale_cbc_me1" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_cbc"/><field name="grade">ME1</field>
+        <field name="min_mark">58</field><field name="points">6</field><field name="descriptor">Meets Expectations</field>
+    </record>
+    <record id="scale_cbc_me2" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_cbc"/><field name="grade">ME2</field>
+        <field name="min_mark">41</field><field name="points">5</field><field name="descriptor">Meets Expectations</field>
+    </record>
+    <record id="scale_cbc_ae1" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_cbc"/><field name="grade">AE1</field>
+        <field name="min_mark">31</field><field name="points">4</field><field name="descriptor">Approaches Expectations</field>
+    </record>
+    <record id="scale_cbc_ae2" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_cbc"/><field name="grade">AE2</field>
+        <field name="min_mark">21</field><field name="points">3</field><field name="descriptor">Approaches Expectations</field>
+    </record>
+    <record id="scale_cbc_be1" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_cbc"/><field name="grade">BE1</field>
+        <field name="min_mark">11</field><field name="points">2</field><field name="descriptor">Below Expectations</field>
+    </record>
+    <record id="scale_cbc_be2" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_cbc"/><field name="grade">BE2</field>
+        <field name="min_mark">0</field><field name="points">1</field><field name="descriptor">Below Expectations</field>
+    </record>
+
+    <!-- 8-4-4: KCSE letter grades -->
+    <record id="scale_844" model="school.grade.scale">
+        <field name="name">KCSE Grades (8-4-4)</field>
+        <field name="education_system">844</field>
+    </record>
+    <record id="scale_844_a" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">A</field>
+        <field name="min_mark">80</field><field name="points">12</field><field name="descriptor">Excellent</field>
+    </record>
+    <record id="scale_844_am" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">A-</field>
+        <field name="min_mark">75</field><field name="points">11</field><field name="descriptor">Excellent</field>
+    </record>
+    <record id="scale_844_bp" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">B+</field>
+        <field name="min_mark">70</field><field name="points">10</field><field name="descriptor">Very Good</field>
+    </record>
+    <record id="scale_844_b" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">B</field>
+        <field name="min_mark">65</field><field name="points">9</field><field name="descriptor">Very Good</field>
+    </record>
+    <record id="scale_844_bm" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">B-</field>
+        <field name="min_mark">60</field><field name="points">8</field><field name="descriptor">Good</field>
+    </record>
+    <record id="scale_844_cp" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">C+</field>
+        <field name="min_mark">55</field><field name="points">7</field><field name="descriptor">Good</field>
+    </record>
+    <record id="scale_844_c" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">C</field>
+        <field name="min_mark">50</field><field name="points">6</field><field name="descriptor">Fair</field>
+    </record>
+    <record id="scale_844_cm" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">C-</field>
+        <field name="min_mark">45</field><field name="points">5</field><field name="descriptor">Fair</field>
+    </record>
+    <record id="scale_844_dp" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">D+</field>
+        <field name="min_mark">40</field><field name="points">4</field><field name="descriptor">Weak</field>
+    </record>
+    <record id="scale_844_d" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">D</field>
+        <field name="min_mark">35</field><field name="points">3</field><field name="descriptor">Weak</field>
+    </record>
+    <record id="scale_844_dm" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">D-</field>
+        <field name="min_mark">30</field><field name="points">2</field><field name="descriptor">Poor</field>
+    </record>
+    <record id="scale_844_e" model="school.grade.scale.line">
+        <field name="scale_id" ref="scale_844"/><field name="grade">E</field>
+        <field name="min_mark">0</field><field name="points">1</field><field name="descriptor">Very Poor</field>
+    </record>
+</odoo>

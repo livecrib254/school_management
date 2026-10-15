@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Announcements -->
+    <record id="view_school_announcement_list" model="ir.ui.view">
+        <field name="name">school.announcement.list</field>
+        <field name="model">school.announcement</field>
+        <field name="arch" type="xml">
+            <list string="Announcements" decoration-muted="state == 'draft'" decoration-bf="is_pinned">
+                <field name="is_pinned" widget="boolean_favorite" nolabel="1"/>
+                <field name="name"/>
+                <field name="audience"/>
+                <field name="date_publish"/>
+                <field name="date_expire" optional="show"/>
+                <field name="recipient_count" optional="show"/>
+                <field name="read_count" optional="show"/>
+                <field name="user_id" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'published'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_announcement_form" model="ir.ui.view">
+        <field name="name">school.announcement.form</field>
+        <field name="model">school.announcement</field>
+        <field name="arch" type="xml">
+            <form string="Announcement">
+                <header>
+                    <button name="action_publish" type="object" string="Publish" class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="Publish this announcement to the parents in its audience?"/>
+                    <button name="action_draft" type="object" string="Unpublish" invisible="state != 'published'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_readers" type="object" class="oe_stat_button" icon="fa-eye"
+                                invisible="state != 'published'">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="read_count"/> / <field name="recipient_count"/></span>
+                                <span class="o_stat_text">Read</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Half-term break dates"/></h1>
+                    </div>
+                    <group>
+                        <group string="Audience">
+                            <field name="audience" widget="radio"/>
+                            <field name="level_ids" widget="many2many_tags" options="{'no_create': True}"
+                                   invisible="audience != 'level'" required="audience == 'level'"/>
+                            <field name="class_ids" widget="many2many_tags" options="{'no_create': True}"
+                                   invisible="audience != 'class'" required="audience == 'class'"/>
+                        </group>
+                        <group string="Publishing">
+                            <field name="date_publish"/>
+                            <field name="date_expire"/>
+                            <field name="is_pinned"/>
+                            <field name="send_email" readonly="state == 'published'"/>
+                            <field name="send_sms" readonly="state == 'published'"/>
+                            <field name="sms_count" invisible="not sms_sent"/>
+                            <field name="sms_sent" invisible="1"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="body" placeholder="Write the announcement..."/>
+                    <group string="SMS" invisible="not send_sms">
+                        <field name="sms_body" widget="sms_widget" nolabel="1" colspan="2" required="send_sms"
+                               readonly="state == 'published'"/>
+                    </group>
+                    <group>
+                        <field name="attachment_ids" widget="many2many_binary"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_school_announcement_search" model="ir.ui.view">
+        <field name="name">school.announcement.search</field>
+        <field name="model">school.announcement</field>
+        <field name="arch" type="xml">
+            <search string="Announcements">
+                <field name="name"/>
+                <field name="class_ids"/>
+                <field name="level_ids"/>
+                <filter name="published" string="Published" domain="[('state', '=', 'published')]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="important" string="Important" domain="[('is_pinned', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_school_announcement" model="ir.actions.act_window">
+        <field name="name">Announcements</field>
+        <field name="res_model">school.announcement</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Post your first announcement</p>
+            <p>Announcements appear on the parent portal for the whole school, chosen grade levels or chosen
+               classes, and can also be emailed.</p>
+        </field>
+    </record>
+
+    <!-- Messages to guardians -->
+    <record id="view_school_guardian_message_list" model="ir.ui.view">
+        <field name="name">school.guardian.message.list</field>
+        <field name="model">school.guardian.message</field>
+        <field name="arch" type="xml">
+            <list string="Guardian Messages" decoration-muted="state == 'closed'">
+                <field name="write_date" string="Last Activity"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="student_id"/>
+                <field name="class_id" optional="show"/>
+                <field name="user_id" optional="show"/>
+                <field name="message_needaction" column_invisible="True"/>
+                <field name="state" widget="badge" decoration-info="state == 'open'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_guardian_message_form" model="ir.ui.view">
+        <field name="name">school.guardian.message.form</field>
+        <field name="model">school.guardian.message</field>
+        <field name="arch" type="xml">
+            <form string="Message to Guardian">
+                <header>
+                    <button name="action_send" type="object" string="Send" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_close" type="object" string="Close Conversation"
+                            invisible="state != 'open'"/>
+                    <button name="action_reopen" type="object" string="Reopen" invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Grade 4 science project" readonly="state != 'draft'"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="level_id" options="{'no_create': True}" readonly="state != 'draft'"/>
+                            <field name="class_id" options="{'no_create': True}" readonly="state != 'draft'"/>
+                            <field name="student_id" options="{'no_create': True}" readonly="state != 'draft'"/>
+                            <field name="partner_id" options="{'no_create': True}" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="user_id" readonly="state != 'draft'"/>
+                            <field name="send_sms" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="body" placeholder="Write your message to the guardian..." readonly="state != 'draft'"
+                           invisible="state != 'draft'"/>
+                    <div class="text-muted" invisible="state == 'draft'">
+                        The conversation continues in the chatter: use "Send message" to write to the guardian;
+                        their replies from the parent portal or by email appear there.
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_school_guardian_message_search" model="ir.ui.view">
+        <field name="name">school.guardian.message.search</field>
+        <field name="model">school.guardian.message</field>
+        <field name="arch" type="xml">
+            <search string="Guardian Messages">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="student_id"/>
+                <field name="class_id"/>
+                <field name="level_id"/>
+                <filter name="mine" string="My Messages" domain="[('user_id', '=', uid)]"/>
+                <filter name="unread" string="Unread Replies" domain="[('message_needaction', '=', True)]"/>
+                <separator/>
+                <filter name="open" string="Open" domain="[('state', '=', 'open')]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="closed" string="Closed" domain="[('state', '=', 'closed')]"/>
+                <group>
+                    <filter name="group_class" string="Class" context="{'group_by': 'class_id'}"/>
+                    <filter name="group_level" string="Grade Level" context="{'group_by': 'level_id'}"/>
+                    <filter name="group_user" string="From" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_school_guardian_message" model="ir.actions.act_window">
+        <field name="name">Guardian Messages</field>
+        <field name="res_model">school.guardian.message</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_mine': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write to a parent or guardian</p>
+            <p>Private conversations with one guardian, optionally about one of their children. The guardian
+               reads and replies on the parent portal and is notified by email.</p>
+        </field>
+    </record>
+</odoo>

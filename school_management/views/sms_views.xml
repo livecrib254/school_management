@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- "Send SMS" to the primary guardians of the selected students (Action menu / student form).
+         Choose a template such as "School: Fee Balance Reminder" in the composer. -->
+    <record id="action_student_sms_composer_mass" model="ir.actions.act_window">
+        <field name="name">Send SMS to Guardians</field>
+        <field name="res_model">sms.composer</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_composition_mode': 'mass',
+            'default_mass_keep_log': True,
+            'default_res_ids': active_ids,
+        }</field>
+        <field name="binding_model_id" ref="school_management.model_school_student"/>
+        <field name="binding_view_types">list,kanban</field>
+        <field name="group_ids" eval="[(4, ref('group_school_teacher')), (4, ref('group_school_registrar')), (4, ref('group_school_accountant'))]"/>
+    </record>
+
+    <record id="action_student_sms_composer_single" model="ir.actions.act_window">
+        <field name="name">Send SMS to Guardian</field>
+        <field name="res_model">sms.composer</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_composition_mode': 'comment',
+            'default_res_id': active_id,
+        }</field>
+        <field name="binding_model_id" ref="school_management.model_school_student"/>
+        <field name="binding_view_types">form</field>
+        <field name="group_ids" eval="[(4, ref('group_school_teacher')), (4, ref('group_school_registrar')), (4, ref('group_school_accountant'))]"/>
+    </record>
+</odoo>

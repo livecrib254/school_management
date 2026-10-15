@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Teaching staff -->
+        <record id="staff_role_principal" model="school.staff.role">
+            <field name="name">Principal / Head Teacher</field><field name="staff_type">teaching</field><field name="sequence">1</field>
+        </record>
+        <record id="staff_role_deputy" model="school.staff.role">
+            <field name="name">Deputy Principal / Deputy Head Teacher</field><field name="staff_type">teaching</field><field name="sequence">2</field>
+        </record>
+        <record id="staff_role_senior_teacher" model="school.staff.role">
+            <field name="name">Senior Teacher / Head of Department</field><field name="staff_type">teaching</field><field name="sequence">3</field>
+        </record>
+        <record id="staff_role_teacher" model="school.staff.role">
+            <field name="name">Teacher</field><field name="staff_type">teaching</field><field name="sequence">4</field>
+        </record>
+        <record id="staff_role_intern_teacher" model="school.staff.role">
+            <field name="name">Intern / BOM Teacher</field><field name="staff_type">teaching</field><field name="sequence">5</field>
+        </record>
+
+        <!-- Non-teaching (support) staff -->
+        <record id="staff_role_bursar" model="school.staff.role">
+            <field name="name">Bursar</field><field name="sequence">10</field>
+        </record>
+        <record id="staff_role_accounts_clerk" model="school.staff.role">
+            <field name="name">Accounts Clerk</field><field name="sequence">11</field>
+        </record>
+        <record id="staff_role_secretary" model="school.staff.role">
+            <field name="name">Secretary / Receptionist</field><field name="sequence">12</field>
+        </record>
+        <record id="staff_role_librarian" model="school.staff.role">
+            <field name="name">Librarian</field><field name="sequence">13</field>
+        </record>
+        <record id="staff_role_lab_technician" model="school.staff.role">
+            <field name="name">Laboratory Technician</field><field name="sequence">14</field>
+        </record>
+        <record id="staff_role_ict" model="school.staff.role">
+            <field name="name">ICT Technician</field><field name="sequence">15</field>
+        </record>
+        <record id="staff_role_nurse" model="school.staff.role">
+            <field name="name">School Nurse</field><field name="sequence">16</field>
+        </record>
+        <record id="staff_role_matron" model="school.staff.role">
+            <field name="name">Matron</field><field name="sequence">17</field>
+        </record>
+        <record id="staff_role_patron" model="school.staff.role">
+            <field name="name">Patron</field><field name="sequence">18</field>
+        </record>
+        <record id="staff_role_storekeeper" model="school.staff.role">
+            <field name="name">Storekeeper</field><field name="sequence">19</field>
+        </record>
+        <record id="staff_role_cook" model="school.staff.role">
+            <field name="name">Cook / Kitchen Staff</field><field name="sequence">20</field>
+        </record>
+        <record id="staff_role_driver" model="school.staff.role">
+            <field name="name">Driver</field><field name="sequence">21</field>
+        </record>
+        <record id="staff_role_security" model="school.staff.role">
+            <field name="name">Security Guard</field><field name="sequence">22</field>
+        </record>
+        <record id="staff_role_cleaner" model="school.staff.role">
+            <field name="name">Cleaner</field><field name="sequence">23</field>
+        </record>
+        <record id="staff_role_groundsman" model="school.staff.role">
+            <field name="name">Groundsman / Gardener</field><field name="sequence">24</field>
+        </record>
+    </data>
+
+    <!-- Outside noupdate so it also runs on module upgrade; it only touches teachers without a role. -->
+    <function model="hr.employee" name="_school_assign_teacher_role"/>
+</odoo>

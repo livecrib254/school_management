@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_school" model="ir.ui.view">
+        <field name="name">account.move.form.school</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Student fee invoices are billed to a parent or guardian, not a "Customer". -->
+            <xpath expr="//label[@for='partner_id'][contains(@invisible, 'out_invoice')]" position="attributes">
+                <attribute name="invisible">move_type not in ('out_invoice', 'out_refund', 'out_receipt') or student_id</attribute>
+            </xpath>
+            <xpath expr="//label[@for='partner_id'][contains(@invisible, 'out_invoice')]" position="after">
+                <label for="partner_id" string="Parent / Guardian" style="font-weight:bold;"
+                       invisible="move_type not in ('out_invoice', 'out_refund', 'out_receipt') or not student_id"/>
+            </xpath>
+            <xpath expr="//group[@id='header_left_group']" position="inside">
+                <field name="student_id" invisible="move_type not in ('out_invoice', 'out_refund')"
+                       readonly="state != 'draft'" options="{'no_create': True}"/>
+                <field name="school_class_id" invisible="not student_id"
+                       readonly="state != 'draft'" options="{'no_create': True}"/>
+                <field name="school_term_id" invisible="move_type not in ('out_invoice', 'out_refund')"
+                       readonly="state != 'draft'" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_payment_form_school" model="ir.ui.view">
+        <field name="name">account.payment.form.school</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id'][contains(@invisible, &quot;'customer'&quot;)]" position="after">
+                <field name="student_id" invisible="partner_type != 'customer'"
+                       readonly="state != 'draft'" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Student invoice lists (Fees > Student Invoices, the student's Invoices button and the
+         generator's View Invoices) pass school_invoice_list in the context. -->
+    <record id="view_out_invoice_tree_school" model="ir.ui.view">
+        <field name="name">account.out.invoice.list.school</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_partner_display_name'][contains(@column_invisible, 'out_invoice')]" position="attributes">
+                <attribute name="column_invisible">context.get('default_move_type') not in ('out_invoice', 'out_refund', 'out_receipt') or context.get('school_invoice_list')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_partner_display_name'][contains(@column_invisible, 'out_invoice')]" position="after">
+                <field name="student_id" string="Student" column_invisible="not context.get('school_invoice_list')"/>
+                <field name="invoice_partner_display_name" string="Parent / Guardian" groups="base.group_user"
+                       column_invisible="not context.get('school_invoice_list')"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Student fee invoices: school name and a student details block above the dates row.
+         Other invoices are unchanged. The logo comes from the company letterhead as usual. -->
+    <template id="report_invoice_document_school" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@id='informations']" position="before">
+            <t t-if="o.student_id">
+                <div t-if="o.company_id.school_name" class="mb-2" name="school_name">
+                    <strong style="font-size: 1.15em;" t-out="o.company_id.school_name"/>
+                    <span class="text-muted"> · Student Fee Invoice</span>
+                </div>
+                <div class="row mb-4 mx-0 py-2" name="student_details"
+                     style="border: 1px solid #dee2e6; border-radius: 6px;">
+                    <div class="col">
+                        <strong>Student</strong>
+                        <div t-field="o.student_id.name"/>
+                    </div>
+                    <div class="col">
+                        <strong>Admission No.</strong>
+                        <div t-field="o.student_id.admission_no"/>
+                    </div>
+                    <div class="col" t-if="o.school_class_id">
+                        <strong>Class</strong>
+                        <div t-field="o.school_class_id.name"/>
+                    </div>
+                    <div class="col" t-if="o.school_term_id">
+                        <strong>Term</strong>
+                        <div t-out="o.school_term_id.display_name"/>
+                    </div>
+                    <div class="col" t-if="o.student_id.upi">
+                        <strong>NEMIS UPI</strong>
+                        <div t-field="o.student_id.upi"/>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+        <!-- Account summary: arrears or credit from other terms, so parents see the full amount owed. -->
+        <xpath expr="//div[@id='payment_term']" position="before">
+            <t t-if="o.student_id and o.move_type == 'out_invoice'">
+                <table class="table table-sm table-borderless mt-3 mb-0" name="school_account_summary"
+                       style="width: 50%; margin-left: auto; border-top: 1px solid #dee2e6;">
+                    <tr>
+                        <td colspan="2" class="text-muted">
+                            Student account as at <t t-out="datetime.date.today().strftime('%d/%m/%Y')"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <t t-if="o.school_other_balance &lt; 0">Credit from earlier payments</t>
+                            <t t-else="">Balance from other invoices</t>
+                        </td>
+                        <td class="text-end">
+                            <span t-out="abs(o.school_other_balance)"
+                                  t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Due on this invoice</td>
+                        <td class="text-end">
+                            <span t-out="o.school_total_due - o.school_other_balance"
+                                  t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>
+                        </td>
+                    </tr>
+                    <tr class="fw-bold" style="border-top: 1px solid #dee2e6;">
+                        <td>
+                            <t t-if="o.school_total_due &lt; 0">Account in credit</t>
+                            <t t-else="">Total outstanding</t>
+                        </td>
+                        <td class="text-end">
+                            <span t-out="abs(o.school_total_due)"
+                                  t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>
+                        </td>
+                    </tr>
+                </table>
+            </t>
+        </xpath>
+        <xpath expr="//div[@name='customer_code']/strong" position="replace">
+            <strong t-if="o.student_id">Parent / Guardian Code</strong>
+            <strong t-else="">Customer Code</strong>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="school_management.TimetableGrid">
+        <div class="o_action o_tt">
+            <t t-set="d" t-value="state.data"/>
+
+            <!-- Header and filters, one row -->
+            <div class="o_tt_header">
+                <div>
+                    <h1 class="o_tt_title">
+                        Timetable<t t-if="d and d.current"> · <span t-out="d.current.name"/></t>
+                    </h1>
+                    <div class="o_tt_subtitle" t-if="d">
+                        <t t-if="d.year"><t t-out="d.year.name"/> · </t>
+                        <t t-out="lessonCount"/> lesson(s) per week
+                    </div>
+                </div>
+                <div class="o_tt_filters" t-if="d">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="View by">
+                        <button t-attf-class="btn {{ state.mode === 'class' ? 'btn-primary' : 'btn-secondary' }}"
+                                t-on-click="() => this.setMode('class')">By Class</button>
+                        <button t-attf-class="btn {{ state.mode === 'teacher' ? 'btn-primary' : 'btn-secondary' }}"
+                                t-on-click="() => this.setMode('teacher')">By Teacher</button>
+                    </div>
+                    <select class="form-select form-select-sm" t-on-change="onSelectRecord"
+                            t-att-aria-label="state.mode === 'teacher' ? 'Teacher' : 'Class'">
+                        <option t-if="!options.length" value="">Nothing to show</option>
+                        <t t-foreach="options" t-as="opt" t-key="opt.id">
+                            <option t-att-value="opt.id" t-att-selected="d.current and opt.id === d.current.id" t-out="opt.name"/>
+                        </t>
+                    </select>
+                    <select t-if="d.years.length > 1" class="form-select form-select-sm o_tt_year"
+                            t-on-change="onSelectYear" aria-label="Academic year">
+                        <t t-foreach="d.years" t-as="year" t-key="year.id">
+                            <option t-att-value="year.id" t-att-selected="d.year and year.id === d.year.id" t-out="year.name"/>
+                        </t>
+                    </select>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Layout">
+                        <button class="btn btn-primary" title="Grid view"><i class="fa fa-th"/> Grid</button>
+                        <button class="btn btn-secondary" title="List view" t-on-click="openList"><i class="fa fa-list"/> List</button>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" title="Print this timetable as PDF"
+                            t-att-disabled="!d.current" t-on-click="printGrid"><i class="fa fa-print"/> Print</button>
+                </div>
+            </div>
+
+            <div t-if="!d" class="o_tt_empty"><i class="fa fa-circle-o-notch fa-spin"/> Loading…</div>
+            <div t-elif="!d.periods.length" class="o_tt_empty">
+                No lesson periods are set up yet.
+                <a href="#" t-on-click.prevent="openPeriods">Create the school day's periods</a> to start the timetable.
+            </div>
+            <div t-elif="!d.current" class="o_tt_empty">
+                <t t-if="state.mode === 'teacher'">No teachers yet. Give staff a teaching role under Staff.</t>
+                <t t-else="">No classes in this academic year yet.</t>
+            </div>
+
+            <!-- Weekly grid -->
+            <div t-else="" t-attf-class="o_tt_scroll {{ state.loading ? 'o_tt_loading' : '' }}">
+                <div class="o_tt_grid" t-attf-style="grid-template-columns: 120px repeat({{ d.weekdays.length }}, minmax(130px, 1fr));">
+                    <div class="o_tt_corner"/>
+                    <t t-foreach="d.weekdays" t-as="day" t-key="day.key">
+                        <div t-attf-class="o_tt_day {{ day.key === todayKey ? 'o_tt_today' : '' }}">
+                            <t t-out="day.name"/>
+                            <span t-if="day.key === todayKey" class="o_tt_today_badge">Today</span>
+                        </div>
+                    </t>
+
+                    <t t-foreach="d.periods" t-as="period" t-key="period.id">
+                        <div t-attf-class="o_tt_time {{ period.is_break ? 'o_tt_time_break' : '' }}">
+                            <div class="o_tt_period_name" t-out="period.name"/>
+                            <div class="o_tt_period_time"><t t-out="time(period.start)"/>–<t t-out="time(period.end)"/></div>
+                        </div>
+                        <div t-if="period.is_break" class="o_tt_break" t-attf-style="grid-column: span {{ d.weekdays.length }};">
+                            <i class="fa fa-coffee"/> <t t-out="period.name"/>
+                        </div>
+                        <t t-else="">
+                            <t t-foreach="d.weekdays" t-as="day" t-key="day.key">
+                                <t t-set="lesson" t-value="cell(day.key, period.id)"/>
+                                <button t-if="lesson" t-attf-class="o_tt_lesson {{ tone(lesson.subject_id) }}"
+                                        t-on-click="() => this.openEntry(lesson.id)"
+                                        t-att-title="lesson.subject + ' · ' + (state.mode === 'teacher' ? lesson.class : lesson.teacher)">
+                                    <span class="o_tt_subject" t-out="lesson.subject"/>
+                                    <span class="o_tt_meta">
+                                        <i t-attf-class="fa {{ state.mode === 'teacher' ? 'fa-users' : 'fa-user' }}"/>
+                                        <t t-out="(state.mode === 'teacher' ? lesson.class : lesson.teacher) or '—'"/>
+                                    </span>
+                                    <span t-if="lesson.room" class="o_tt_meta"><i class="fa fa-map-marker"/> <t t-out="lesson.room"/></span>
+                                </button>
+                                <button t-elif="d.can_edit" class="o_tt_free" title="Add a lesson"
+                                        t-on-click="() => this.newEntry(day.key, period.id)">
+                                    <i class="fa fa-plus"/>
+                                </button>
+                                <div t-else="" class="o_tt_free o_tt_free_ro"/>
+                            </t>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

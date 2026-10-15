@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_school_attendance_list" model="ir.ui.view">
+        <field name="name">school.attendance.list</field>
+        <field name="model">school.attendance</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'draft'">
+                <field name="date"/>
+                <field name="class_id"/>
+                <field name="user_id"/>
+                <field name="present_count"/>
+                <field name="absent_count"/>
+                <field name="total_count"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_attendance_form" model="ir.ui.view">
+        <field name="name">school.attendance.form</field>
+        <field name="model">school.attendance</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_mark_all_present" type="object" string="Mark All Present" invisible="state != 'draft'"/>
+                    <button name="action_load_students" type="object" string="Load Students" invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object" string="Reopen" invisible="state != 'confirmed'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="class_id" readonly="state == 'confirmed'"/>
+                            <field name="date" readonly="state == 'confirmed'"/>
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="present_count"/>
+                            <field name="absent_count"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state == 'confirmed'">
+                        <list editable="bottom" create="0" decoration-danger="status == 'absent'" decoration-warning="status == 'late'">
+                            <field name="student_id" readonly="1"/>
+                            <field name="status"/>
+                            <field name="remarks"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_school_attendance_search" model="ir.ui.view">
+        <field name="name">school.attendance.search</field>
+        <field name="model">school.attendance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="class_id"/>
+                <filter name="today" string="Today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="draft" string="Not Confirmed" domain="[('state', '=', 'draft')]"/>
+                <group>
+                    <filter name="group_class" string="Class" context="{'group_by': 'class_id'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_school_attendance_line_list" model="ir.ui.view">
+        <field name="name">school.attendance.line.list</field>
+        <field name="model">school.attendance.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="class_id"/>
+                <field name="student_id"/>
+                <field name="status"/>
+                <field name="remarks"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_school_attendance" model="ir.actions.act_window">
+        <field name="name">Attendance</field>
+        <field name="res_model">school.attendance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Timetable -->
+    <record id="view_school_period_list" model="ir.ui.view">
+        <field name="name">school.period.list</field>
+        <field name="model">school.period</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
+                <field name="is_break"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_school_period" model="ir.actions.act_window">
+        <field name="name">Lesson Periods</field>
+        <field name="res_model">school.period</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_school_timetable_list" model="ir.ui.view">
+        <field name="name">school.timetable.entry.list</field>
+        <field name="model">school.timetable.entry</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <header>
+                    <button name="action_open_timetable_grid" type="object" string="Grid View"
+                            icon="fa-th" class="btn-secondary" display="always"/>
+                </header>
+                <field name="class_id"/>
+                <field name="weekday"/>
+                <field name="period_id"/>
+                <field name="subject_id"/>
+                <field name="teacher_id"/>
+                <field name="room"/>
+            </list>
+        </field>
+    </record>
+    <!-- Used by the grid to add or edit a lesson in a dialog -->
+    <record id="view_school_timetable_form" model="ir.ui.view">
+        <field name="name">school.timetable.entry.form</field>
+        <field name="model">school.timetable.entry</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="class_id" options="{'no_create': True}"/>
+                            <field name="weekday"/>
+                            <field name="period_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="subject_id" options="{'no_create': True}"/>
+                            <field name="teacher_id" options="{'no_create': True}"/>
+                            <field name="room"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_school_timetable_search" model="ir.ui.view">
+        <field name="name">school.timetable.entry.search</field>
+        <field name="model">school.timetable.entry</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="class_id"/>
+                <field name="teacher_id"/>
+                <field name="subject_id"/>
+                <field name="year_id"/>
+                <group>
+                    <filter name="group_year" string="Academic Year" context="{'group_by': 'year_id'}"/>
+                    <filter name="group_class" string="Class" context="{'group_by': 'class_id'}"/>
+                    <filter name="group_teacher" string="Teacher" context="{'group_by': 'teacher_id'}"/>
+                    <filter name="group_day" string="Day" context="{'group_by': 'weekday'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_timetable" model="ir.actions.act_window">
+        <field name="name">Timetable</field>
+        <field name="res_model">school.timetable.entry</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_class': 1}</field>
+    </record>
+    <record id="action_school_timetable_grid" model="ir.actions.client">
+        <field name="name">Timetable</field>
+        <field name="tag">school_management.timetable_grid</field>
+    </record>
+</odoo>

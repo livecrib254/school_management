@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_children" name="Portal: My Children entry" inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_client_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_client_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">My Children</t>
+                <t t-set="url" t-value="'/my/children'"/>
+                <t t-set="text">Report cards, class and fee balance</t>
+                <t t-set="placeholder_count" t-value="'school_children_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">School Announcements</t>
+                <t t-set="url" t-value="'/my/announcements'"/>
+                <t t-set="text">News and notices from the school</t>
+                <t t-set="placeholder_count" t-value="'school_announcement_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Messages from School</t>
+                <t t-set="url" t-value="'/my/messages'"/>
+                <t t-set="text">Conversations with teachers and the school office</t>
+                <t t-set="placeholder_count" t-value="'school_message_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_breadcrumbs_children" name="Portal: My Children breadcrumb" inherit_id="portal.portal_breadcrumbs" priority="40">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'children'" class="breadcrumb-item active">My Children</li>
+            <li t-if="page_name == 'announcements'" class="breadcrumb-item active">Announcements</li>
+            <li t-if="page_name == 'announcement'" class="breadcrumb-item"><a href="/my/announcements">Announcements</a></li>
+            <li t-if="page_name == 'announcement'" class="breadcrumb-item active" t-out="announcement.name"/>
+            <li t-if="page_name == 'messages'" class="breadcrumb-item active">Messages</li>
+            <li t-if="page_name == 'message'" class="breadcrumb-item"><a href="/my/messages">Messages</a></li>
+            <li t-if="page_name == 'message'" class="breadcrumb-item active" t-out="conversation.name"/>
+        </xpath>
+    </template>
+
+    <template id="portal_my_children" name="Portal: My Children">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title">My Children</t>
+            <div class="container my-4">
+                <h3 t-attf-class="{{ 'mb-1' if school_name else 'mb-4' }}">My Children</h3>
+                <p t-if="school_name" class="text-muted mb-4" t-out="school_name"/>
+                <t t-if="announcements">
+                    <div class="card mb-4 border-primary-subtle">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <strong><i class="fa fa-bullhorn me-1"/> Announcements</strong>
+                            <a href="/my/announcements" class="small">See all</a>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li t-foreach="announcements" t-as="note" class="list-group-item">
+                                <a t-attf-href="/my/announcements/#{note.id}" t-att-class="'fw-bold' if partner not in note.read_partner_ids else ''">
+                                    <i t-if="note.is_pinned" class="fa fa-exclamation-circle text-danger me-1" title="Important"/>
+                                    <t t-out="note.name"/>
+                                </a>
+                                <span t-if="partner not in note.read_partner_ids" class="badge text-bg-primary ms-1">New</span>
+                                <span class="text-muted small ms-2" t-field="note.date_publish"/>
+                            </li>
+                        </ul>
+                    </div>
+                </t>
+                <t t-if="not students">
+                    <p class="text-muted">No students are linked to your account yet. Please contact the school office.</p>
+                </t>
+                <div t-foreach="students" t-as="student" class="card mb-4">
+                    <div class="card-header">
+                        <strong t-out="student.name"/>
+                        <span class="text-muted ms-2" t-out="student.admission_no"/>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="text-muted">Class</div>
+                                <div t-out="student.class_id.name or '-'"/>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted">Status</div>
+                                <div t-field="student.state"/>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted">Fee balance</div>
+                                <div>
+                                    <span t-out="abs(student.fee_balance)" t-options="{'widget': 'monetary', 'display_currency': student.currency_id}"/>
+                                    <span t-if="student.fee_balance &lt; 0" class="badge text-bg-success ms-1">In credit</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h6>Report cards</h6>
+                        <t t-set="student_cards" t-value="cards.filtered(lambda c: c.student_id == student)"/>
+                        <p t-if="not student_cards" class="text-muted">No published report cards yet.</p>
+                        <ul t-else="" class="list-unstyled">
+                            <li t-foreach="student_cards" t-as="card">
+                                <a t-attf-href="/my/children/report/#{card.id}">
+                                    <t t-out="card.term_id.display_name"/> - Mean <t t-out="'%.1f' % card.mean_percentage"/>% (<t t-out="card.mean_grade"/>)
+                                </a>
+                            </li>
+                        </ul>
+                        <a href="/my/invoices" class="btn btn-sm btn-outline-primary">View fee invoices</a>
+                        <a t-attf-href="/my/children/statement/#{student.id}" class="btn btn-sm btn-outline-secondary ms-1">
+                            <i class="fa fa-download"/> Fee statement
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Announcements -->
+    <template id="portal_my_announcements" name="Portal: School Announcements">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title">Announcements</t>
+            <div class="container my-4">
+                <h3 class="mb-4">Announcements</h3>
+                <p t-if="not announcements" class="text-muted">There are no announcements at the moment.</p>
+                <div class="list-group">
+                    <a t-foreach="announcements" t-as="note" t-attf-href="/my/announcements/#{note.id}"
+                       t-attf-class="list-group-item list-group-item-action {{ 'border-danger-subtle' if note.is_pinned else '' }}">
+                        <div class="d-flex justify-content-between">
+                            <span t-att-class="'fw-bold' if partner not in note.read_partner_ids else ''">
+                                <i t-if="note.is_pinned" class="fa fa-exclamation-circle text-danger me-1" title="Important"/>
+                                <t t-out="note.name"/>
+                                <span t-if="partner not in note.read_partner_ids" class="badge text-bg-primary ms-1">New</span>
+                            </span>
+                            <span class="text-muted small" t-field="note.date_publish"/>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_my_announcement" name="Portal: School Announcement">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title" t-value="announcement.name"/>
+            <div class="container my-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="mb-1">
+                            <i t-if="announcement.is_pinned" class="fa fa-exclamation-circle text-danger me-1" title="Important"/>
+                            <t t-out="announcement.name"/>
+                        </h3>
+                        <p class="text-muted small mb-4">
+                            <span t-field="announcement.date_publish"/>
+                            <t t-if="announcement.company_id.school_name"> · <t t-out="announcement.company_id.school_name"/></t>
+                        </p>
+                        <div t-field="announcement.body"/>
+                        <div t-if="announcement.attachment_ids" class="mt-4 pt-3 border-top">
+                            <h6 class="text-muted"><i class="fa fa-paperclip me-1"/>Attachments</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li t-foreach="announcement.attachment_ids" t-as="file" class="mb-1">
+                                    <a t-attf-href="/my/announcements/#{announcement.id}/file/#{file.id}" target="_blank">
+                                        <i class="fa fa-file-o me-1"/><t t-out="file.name"/>
+                                    </a>
+                                    <a t-attf-href="/my/announcements/#{announcement.id}/file/#{file.id}?download=1"
+                                       class="ms-2 text-muted" title="Download"><i class="fa fa-download"/></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <a href="/my/announcements" class="btn btn-link px-0 mt-3"><i class="fa fa-arrow-left"/> All announcements</a>
+            </div>
+        </t>
+    </template>
+
+    <!-- Messages with the school -->
+    <template id="portal_my_messages" name="Portal: Messages from School">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title">Messages</t>
+            <div class="container my-4">
+                <h3 class="mb-4">Messages from School</h3>
+                <p t-if="not conversations" class="text-muted">You have no messages from the school.</p>
+                <div class="list-group">
+                    <a t-foreach="conversations" t-as="conversation" t-attf-href="/my/messages/#{conversation.id}"
+                       class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between">
+                            <span>
+                                <strong t-out="conversation.name"/>
+                                <span t-if="conversation.student_id" class="text-muted ms-2">
+                                    about <t t-out="conversation.student_id.name"/>
+                                </span>
+                                <span t-if="conversation.state == 'closed'" class="badge text-bg-secondary ms-1">Closed</span>
+                            </span>
+                            <span class="text-muted small" t-field="conversation.write_date" t-options="{'widget': 'date'}"/>
+                        </div>
+                        <div class="text-muted small">From <t t-out="conversation.user_id.name"/></div>
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_my_message" name="Portal: Message from School">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title" t-value="conversation.name"/>
+            <div class="container my-4">
+                <h3 class="mb-1" t-out="conversation.name"/>
+                <p class="text-muted mb-4">
+                    From <t t-out="conversation.user_id.name"/>
+                    <t t-if="conversation.student_id"> · about <t t-out="conversation.student_id.name"/></t>
+                </p>
+                <p t-if="conversation.state == 'closed'" class="alert alert-secondary">
+                    This conversation is closed. Please contact the school office if you need anything else.
+                </p>
+                <t t-call="portal.message_thread">
+                    <t t-set="object" t-value="conversation"/>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

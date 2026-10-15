@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_school_root" name="School" web_icon="school_management,static/description/icon.png" sequence="40"
+              action="action_school_dashboard"
+              groups="group_school_teacher,group_school_registrar,group_school_accountant,group_school_librarian,group_school_manager"/>
+
+    <menuitem id="menu_school_dashboard" name="Dashboard" parent="menu_school_root"
+              action="action_school_dashboard" sequence="1"/>
+
+    <!-- Admissions -->
+    <menuitem id="menu_school_admissions" name="Admissions" parent="menu_school_root" sequence="10"
+              groups="group_school_registrar"/>
+    <menuitem id="menu_school_admission" name="Applications" parent="menu_school_admissions"
+              action="action_school_admission" sequence="10"/>
+
+    <!-- Communication -->
+    <menuitem id="menu_school_communication" name="Communication" parent="menu_school_root" sequence="25"
+              groups="group_school_teacher,group_school_registrar,group_school_accountant"/>
+    <menuitem id="menu_school_announcement" name="Announcements" parent="menu_school_communication"
+              action="action_school_announcement" sequence="10"/>
+    <menuitem id="menu_school_guardian_message" name="Guardian Messages" parent="menu_school_communication"
+              action="action_school_guardian_message" sequence="20"/>
+
+    <!-- Students -->
+    <menuitem id="menu_school_students" name="Students" parent="menu_school_root" sequence="20"
+              groups="group_school_teacher,group_school_registrar,group_school_accountant"/>
+    <menuitem id="menu_school_student" name="Students" parent="menu_school_students"
+              action="action_school_student" sequence="10"/>
+    <menuitem id="menu_school_guardian" name="Parents &amp; Guardians" parent="menu_school_students"
+              action="action_school_guardian" sequence="20" groups="group_school_registrar,group_school_accountant"/>
+    <menuitem id="menu_school_promote" name="Promote Students" parent="menu_school_students"
+              action="action_school_promote" sequence="30" groups="group_school_manager"/>
+    <menuitem id="menu_school_rollover" name="Year-End Rollover" parent="menu_school_students"
+              action="action_school_rollover" sequence="40" groups="group_school_manager"/>
+
+    <!-- Academics -->
+    <menuitem id="menu_school_academics" name="Academics" parent="menu_school_root" sequence="30"
+              groups="group_school_teacher"/>
+    <menuitem id="menu_school_class" name="Classes" parent="menu_school_academics"
+              action="action_school_class" sequence="10"/>
+    <menuitem id="menu_school_attendance" name="Attendance" parent="menu_school_academics"
+              action="action_school_attendance" sequence="20"/>
+    <menuitem id="menu_school_timetable" name="Timetable" parent="menu_school_academics"
+              action="action_school_timetable_grid" sequence="30"/>
+
+    <!-- Exams -->
+    <menuitem id="menu_school_exams" name="Exams" parent="menu_school_root" sequence="40"
+              groups="group_school_teacher"/>
+    <menuitem id="menu_school_exam" name="Exams" parent="menu_school_exams"
+              action="action_school_exam" sequence="10"/>
+    <menuitem id="menu_school_result" name="Mark Entry" parent="menu_school_exams"
+              action="action_school_result" sequence="20"/>
+    <menuitem id="menu_school_report_card" name="Report Cards" parent="menu_school_exams"
+              action="action_school_report_card" sequence="30"/>
+    <menuitem id="menu_school_report_card_wizard" name="Generate Report Cards" parent="menu_school_exams"
+              action="action_school_report_card_wizard" sequence="40"/>
+
+    <!-- Fees -->
+    <menuitem id="menu_school_fees" name="Fees" parent="menu_school_root" sequence="50"
+              groups="group_school_accountant"/>
+    <menuitem id="menu_school_fee_structure" name="Fee Structures" parent="menu_school_fees"
+              action="action_school_fee_structure" sequence="10"/>
+    <menuitem id="menu_school_fee_generate" name="Generate Invoices" parent="menu_school_fees"
+              action="action_school_fee_generate" sequence="20"/>
+    <menuitem id="menu_school_invoices" name="Student Invoices" parent="menu_school_fees"
+              action="action_school_invoices" sequence="30"/>
+
+    <!-- Staff -->
+    <menuitem id="menu_school_staff" name="Staff" parent="menu_school_root" sequence="60"
+              groups="group_school_manager"/>
+    <menuitem id="menu_school_all_staff" name="All Staff" parent="menu_school_staff"
+              action="action_school_staff" sequence="5"/>
+    <menuitem id="menu_school_teacher" name="Teachers" parent="menu_school_staff"
+              action="action_school_teacher" sequence="10"/>
+    <menuitem id="menu_school_support_staff" name="Non-Teaching Staff" parent="menu_school_staff"
+              action="action_school_support_staff" sequence="20"/>
+
+    <!-- Library -->
+    <menuitem id="menu_school_library" name="Library" parent="menu_school_root" sequence="70"
+              groups="group_school_librarian"/>
+    <menuitem id="menu_school_book" name="Books" parent="menu_school_library"
+              action="action_school_book" sequence="10"/>
+    <menuitem id="menu_school_loan" name="Loans" parent="menu_school_library"
+              action="action_school_loan" sequence="20"/>
+
+    <!-- Transport -->
+    <menuitem id="menu_school_transport" name="Transport" parent="menu_school_root" sequence="80"
+              groups="group_school_registrar"/>
+    <menuitem id="menu_school_route" name="Routes" parent="menu_school_transport"
+              action="action_school_route" sequence="10"/>
+    <menuitem id="menu_school_vehicle" name="Vehicles" parent="menu_school_transport"
+              action="action_school_vehicle" sequence="20"/>
+    <menuitem id="menu_school_subscription" name="Subscriptions" parent="menu_school_transport"
+              action="action_school_subscription" sequence="30"/>
+
+    <!-- Hostel -->
+    <menuitem id="menu_school_hostel_root" name="Hostel" parent="menu_school_root" sequence="90"
+              groups="group_school_registrar"/>
+    <menuitem id="menu_school_hostel" name="Hostels" parent="menu_school_hostel_root"
+              action="action_school_hostel" sequence="10"/>
+    <menuitem id="menu_school_room" name="Rooms" parent="menu_school_hostel_root"
+              action="action_school_room" sequence="20"/>
+    <menuitem id="menu_school_allocation" name="Bed Allocations" parent="menu_school_hostel_root"
+              action="action_school_allocation" sequence="30"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_school_config" name="Configuration" parent="menu_school_root" sequence="100"
+              groups="group_school_manager"/>
+    <menuitem id="menu_school_settings" name="Settings" parent="menu_school_config"
+              action="action_school_config_settings" sequence="1" groups="base.group_system"/>
+    <menuitem id="menu_school_year" name="Academic Years" parent="menu_school_config"
+              action="action_school_year" sequence="10"/>
+    <menuitem id="menu_school_term" name="Terms" parent="menu_school_config"
+              action="action_school_term" sequence="20"/>
+    <menuitem id="menu_school_level" name="Grade Levels" parent="menu_school_config"
+              action="action_school_level" sequence="30"/>
+    <menuitem id="menu_school_subject" name="Subjects" parent="menu_school_config"
+              action="action_school_subject" sequence="40"/>
+    <menuitem id="menu_school_period" name="Lesson Periods" parent="menu_school_config"
+              action="action_school_period" sequence="50"/>
+    <menuitem id="menu_school_scale" name="Grade Scales" parent="menu_school_config"
+              action="action_school_scale" sequence="60"/>
+    <menuitem id="menu_school_staff_role" name="Staff Roles" parent="menu_school_config"
+              action="action_school_staff_role" sequence="70"/>
+</odoo>

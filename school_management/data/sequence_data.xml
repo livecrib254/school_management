@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_school_student" model="ir.sequence">
+        <field name="name">Student Admission Number</field>
+        <field name="code">school.student</field>
+        <field name="prefix">ADM/%(year)s/</field>
+        <field name="padding">4</field>
+    </record>
+    <record id="seq_school_admission" model="ir.sequence">
+        <field name="name">Admission Application</field>
+        <field name="code">school.admission</field>
+        <field name="prefix">APP/%(year)s/</field>
+        <field name="padding">4</field>
+    </record>
+</odoo>

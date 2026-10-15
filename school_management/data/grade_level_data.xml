@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Declared from the final level backwards so each level can reference the next one. -->
+    <record id="level_g12" model="school.grade.level">
+        <field name="name">Grade 12</field><field name="code">G12</field><field name="sequence">170</field>
+        <field name="education_system">cbc</field><field name="stage">senior_secondary</field>
+    </record>
+    <record id="level_g11" model="school.grade.level">
+        <field name="name">Grade 11</field><field name="code">G11</field><field name="sequence">160</field>
+        <field name="education_system">cbc</field><field name="stage">senior_secondary</field>
+        <field name="next_level_id" ref="level_g12"/>
+    </record>
+    <record id="level_g10" model="school.grade.level">
+        <field name="name">Grade 10</field><field name="code">G10</field><field name="sequence">150</field>
+        <field name="education_system">cbc</field><field name="stage">senior_secondary</field>
+        <field name="next_level_id" ref="level_g11"/>
+    </record>
+    <record id="level_g9" model="school.grade.level">
+        <field name="name">Grade 9</field><field name="code">G9</field><field name="sequence">140</field>
+        <field name="education_system">cbc</field><field name="stage">junior_secondary</field>
+        <field name="next_level_id" ref="level_g10"/>
+    </record>
+    <record id="level_g8" model="school.grade.level">
+        <field name="name">Grade 8</field><field name="code">G8</field><field name="sequence">130</field>
+        <field name="education_system">cbc</field><field name="stage">junior_secondary</field>
+        <field name="next_level_id" ref="level_g9"/>
+    </record>
+    <record id="level_g7" model="school.grade.level">
+        <field name="name">Grade 7</field><field name="code">G7</field><field name="sequence">120</field>
+        <field name="education_system">cbc</field><field name="stage">junior_secondary</field>
+        <field name="next_level_id" ref="level_g8"/>
+    </record>
+    <record id="level_g6" model="school.grade.level">
+        <field name="name">Grade 6</field><field name="code">G6</field><field name="sequence">110</field>
+        <field name="education_system">cbc</field><field name="stage">upper_primary</field>
+        <field name="next_level_id" ref="level_g7"/>
+    </record>
+    <record id="level_g5" model="school.grade.level">
+        <field name="name">Grade 5</field><field name="code">G5</field><field name="sequence">100</field>
+        <field name="education_system">cbc</field><field name="stage">upper_primary</field>
+        <field name="next_level_id" ref="level_g6"/>
+    </record>
+    <record id="level_g4" model="school.grade.level">
+        <field name="name">Grade 4</field><field name="code">G4</field><field name="sequence">90</field>
+        <field name="education_system">cbc</field><field name="stage">upper_primary</field>
+        <field name="next_level_id" ref="level_g5"/>
+    </record>
+    <record id="level_g3" model="school.grade.level">
+        <field name="name">Grade 3</field><field name="code">G3</field><field name="sequence">80</field>
+        <field name="education_system">cbc</field><field name="stage">lower_primary</field>
+        <field name="next_level_id" ref="level_g4"/>
+    </record>
+    <record id="level_g2" model="school.grade.level">
+        <field name="name">Grade 2</field><field name="code">G2</field><field name="sequence">70</field>
+        <field name="education_system">cbc</field><field name="stage">lower_primary</field>
+        <field name="next_level_id" ref="level_g3"/>
+    </record>
+    <record id="level_g1" model="school.grade.level">
+        <field name="name">Grade 1</field><field name="code">G1</field><field name="sequence">60</field>
+        <field name="education_system">cbc</field><field name="stage">lower_primary</field>
+        <field name="next_level_id" ref="level_g2"/>
+    </record>
+    <record id="level_pp2" model="school.grade.level">
+        <field name="name">PP2</field><field name="code">PP2</field><field name="sequence">50</field>
+        <field name="education_system">cbc</field><field name="stage">pre_primary</field>
+        <field name="next_level_id" ref="level_g1"/>
+    </record>
+    <record id="level_pp1" model="school.grade.level">
+        <field name="name">PP1</field><field name="code">PP1</field><field name="sequence">40</field>
+        <field name="education_system">cbc</field><field name="stage">pre_primary</field>
+        <field name="next_level_id" ref="level_pp2"/>
+    </record>
+
+    <!-- 8-4-4 secondary (being phased out) -->
+    <record id="level_f4" model="school.grade.level">
+        <field name="name">Form 4</field><field name="code">F4</field><field name="sequence">240</field>
+        <field name="education_system">844</field><field name="stage">secondary_844</field>
+    </record>
+    <record id="level_f3" model="school.grade.level">
+        <field name="name">Form 3</field><field name="code">F3</field><field name="sequence">230</field>
+        <field name="education_system">844</field><field name="stage">secondary_844</field>
+        <field name="next_level_id" ref="level_f4"/>
+    </record>
+    <record id="level_f2" model="school.grade.level">
+        <field name="name">Form 2</field><field name="code">F2</field><field name="sequence">220</field>
+        <field name="education_system">844</field><field name="stage">secondary_844</field>
+        <field name="next_level_id" ref="level_f3"/>
+    </record>
+    <record id="level_f1" model="school.grade.level">
+        <field name="name">Form 1</field><field name="code">F1</field><field name="sequence">210</field>
+        <field name="education_system">844</field><field name="stage">secondary_844</field>
+        <field name="next_level_id" ref="level_f2"/>
+    </record>
+</odoo>

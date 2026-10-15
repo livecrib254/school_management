@@ -1,0 +1,314 @@
+.o_school_dashboard {
+    --sd-plane: #f6f6f4;
+    --sd-surface: #ffffff;
+    --sd-ink: #0b0b0b;
+    --sd-ink-2: #52514e;
+    --sd-muted: #898781;
+    --sd-hairline: rgba(11, 11, 11, 0.08);
+    --sd-hover: rgba(42, 120, 214, 0.06);
+    --sd-accent: #2a78d6;
+    --sd-good: #0ca30c;
+    --sd-good-ink: #006300;
+    --sd-warning: #fab219;
+    --sd-critical: #d03b3b;
+    --sd-track: #e1e0d9;
+
+    &.o_sd_dark {
+        --sd-plane: #0d0d0d;
+        --sd-surface: #1a1a19;
+        --sd-ink: #f0efec;
+        --sd-ink-2: #c3c2b7;
+        --sd-hairline: rgba(255, 255, 255, 0.10);
+        --sd-hover: rgba(57, 135, 229, 0.12);
+        --sd-accent: #3987e5;
+        --sd-good-ink: #0ca30c;
+        --sd-track: #2c2c2a;
+    }
+
+    height: 100%;
+    overflow: auto;
+    padding: 24px;
+    background: var(--sd-plane);
+    color: var(--sd-ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    // Header and filters
+    .o_sd_header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .o_sd_title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--sd-ink);
+    }
+    .o_sd_title_suffix {
+        font-weight: 400;
+        color: var(--sd-ink-2);
+    }
+    .o_sd_subtitle {
+        color: var(--sd-ink-2);
+        margin-top: 2px;
+    }
+    .o_sd_filters {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        select {
+            min-width: 200px;
+        }
+    }
+    .o_sd_loading {
+        padding: 48px;
+        text-align: center;
+        color: var(--sd-muted);
+    }
+
+    // Cards
+    .o_sd_card {
+        background: var(--sd-surface);
+        border: 1px solid var(--sd-hairline);
+        border-radius: 12px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        color: var(--sd-ink);
+        text-align: left;
+    }
+    button.o_sd_card {
+        padding: 16px 18px;
+        transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+        &:not(:disabled):hover {
+            border-color: var(--sd-accent);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        &:focus-visible {
+            outline: 2px solid var(--sd-accent);
+            outline-offset: 2px;
+        }
+        &:disabled {
+            cursor: default;
+            opacity: 1;
+        }
+    }
+
+    // KPI row
+    .o_sd_kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    .o_sd_hero {
+        grid-column: span 2;
+        @media (max-width: 575.98px) {
+            grid-column: span 1;
+        }
+    }
+    .o_sd_label {
+        font-size: 0.85rem;
+        color: var(--sd-ink-2);
+        font-weight: 500;
+        i {
+            color: var(--sd-muted);
+            margin-right: 4px;
+        }
+    }
+    .o_sd_hero_value {
+        font-size: 3rem;
+        font-weight: 600;
+        line-height: 1.1;
+        margin: 6px 0 10px;
+    }
+    .o_sd_value {
+        font-size: 1.75rem;
+        font-weight: 600;
+        line-height: 1.2;
+        margin: 6px 0 4px;
+    }
+    .o_sd_meta {
+        font-size: 0.8rem;
+        color: var(--sd-muted);
+    }
+    .o_sd_split {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+        color: var(--sd-ink-2);
+        font-size: 0.85rem;
+        b {
+            color: var(--sd-ink);
+            font-weight: 600;
+        }
+    }
+
+    // Panels
+    .o_sd_grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+        @media (max-width: 575.98px) {
+            grid-template-columns: 1fr;
+        }
+        &.o_sd_grid_3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+    .o_sd_panel {
+        padding: 16px 18px;
+        min-width: 0;
+    }
+    .o_sd_panel_head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 4px;
+        h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--sd-ink);
+        }
+        a {
+            font-size: 0.8rem;
+            color: var(--sd-accent);
+            white-space: nowrap;
+        }
+    }
+    .o_sd_panel_sub {
+        font-size: 0.8rem;
+        color: var(--sd-muted);
+        margin-bottom: 8px;
+    }
+    .o_school_chart {
+        position: relative;
+        width: 100%;
+        margin-top: 8px;
+    }
+    .o_sd_empty {
+        padding: 32px 8px;
+        text-align: center;
+        color: var(--sd-muted);
+        &.o_sd_ok {
+            color: var(--sd-good-ink);
+        }
+    }
+    .o_sd_count {
+        min-width: 24px;
+        padding: 0 8px;
+        border-radius: 12px;
+        background: var(--sd-track);
+        color: var(--sd-ink);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    // Lists
+    .o_sd_list {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0;
+        max-height: 280px;
+        overflow-y: auto;
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 6px;
+            border-top: 1px solid var(--sd-hairline);
+            border-radius: 6px;
+            &:first-child {
+                border-top: 0;
+            }
+            &:hover {
+                background: var(--sd-hover);
+            }
+        }
+        a {
+            color: var(--sd-ink);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            &:hover {
+                color: var(--sd-accent);
+            }
+        }
+    }
+    .o_sd_muted {
+        color: var(--sd-muted);
+    }
+    .o_sd_amount {
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    // Status: always icon + label, never color alone
+    .o_sd_status {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 1px 8px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        color: var(--sd-ink);
+    }
+    .o_sd_status_good {
+        background: rgba(12, 163, 12, 0.12);
+        i { color: var(--sd-good); }
+    }
+    .o_sd_status_warning {
+        background: rgba(250, 178, 25, 0.18);
+        i { color: #b07800; }
+    }
+    .o_sd_status_critical {
+        background: rgba(208, 59, 59, 0.14);
+        i { color: var(--sd-critical); }
+    }
+
+    // Meters
+    .o_sd_meter {
+        margin-top: 14px;
+    }
+    .o_sd_meter_head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+        color: var(--sd-ink-2);
+        b {
+            color: var(--sd-ink);
+        }
+    }
+    .o_sd_meter_track {
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: var(--sd-track);
+    }
+    .o_sd_meter_fill {
+        height: 100%;
+        border-radius: 4px;
+        background: var(--sd-accent);
+        transition: width 0.3s ease;
+    }
+    .o_sd_meter_warning .o_sd_meter_fill {
+        background: var(--sd-warning);
+    }
+    .o_sd_meter_critical .o_sd_meter_fill {
+        background: var(--sd-critical);
+    }
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="product_fee_tuition" model="product.product">
+        <field name="name">Tuition Fee</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_fee_boarding" model="product.product">
+        <field name="name">Boarding Fee</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_fee_transport" model="product.product">
+        <field name="name">Transport Fee</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_fee_lunch" model="product.product">
+        <field name="name">Lunch / Meals Fee</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_fee_activity" model="product.product">
+        <field name="name">Activity Fee</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_fee_exam" model="product.product">
+        <field name="name">Examination Fee</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_fee_library" model="product.product">
+        <field name="name">Library Fee</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_fee_development" model="product.product">
+        <field name="name">Development / Building Fund</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+    </record>
+</odoo>

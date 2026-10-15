@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_school_fee_structure_list" model="ir.ui.view">
+        <field name="name">school.fee.structure.list</field>
+        <field name="model">school.fee.structure</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="level_ids" widget="many2many_tags"/>
+                <field name="student_type"/>
+                <field name="year_id"/>
+                <field name="term_id"/>
+                <field name="total_amount"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_fee_structure_form" model="ir.ui.view">
+        <field name="name">school.fee.structure.form</field>
+        <field name="model">school.fee.structure</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="level_ids" widget="many2many_tags"/>
+                            <field name="student_type"/>
+                        </group>
+                        <group>
+                            <field name="year_id"/>
+                            <field name="term_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="total_amount"/>
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="product_id"/>
+                            <field name="description"/>
+                            <field name="amount"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_school_fee_structure" model="ir.actions.act_window">
+        <field name="name">Fee Structures</field>
+        <field name="res_model">school.fee.structure</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Generate invoices wizard -->
+    <record id="view_school_fee_generate_wizard" model="ir.ui.view">
+        <field name="name">school.fee.generate.wizard.form</field>
+        <field name="model">school.fee.generate.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group invisible="state == 'done'">
+                    <group>
+                        <field name="term_id"/>
+                        <field name="class_ids" widget="many2many_tags"/>
+                    </group>
+                    <group>
+                        <field name="invoice_date"/>
+                        <field name="due_date"/>
+                        <field name="include_transport"/>
+                        <field name="post_invoices"/>
+                    </group>
+                </group>
+                <group invisible="state != 'done'">
+                    <field name="state" invisible="1"/>
+                    <field name="summary" nolabel="1" colspan="2"/>
+                </group>
+                <footer>
+                    <button name="action_generate" type="object" string="Generate Invoices" class="btn-primary" invisible="state == 'done'"/>
+                    <button name="action_view_invoices" type="object" string="View Invoices" class="btn-primary" invisible="state != 'done'"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_school_fee_generate" model="ir.actions.act_window">
+        <field name="name">Generate Fee Invoices</field>
+        <field name="res_model">school.fee.generate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Student invoices (reuses the standard customer invoice views) -->
+    <record id="action_school_invoices" model="ir.actions.server">
+        <field name="name">Student Invoices</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="state">code</field>
+        <field name="code">
+action = env['ir.actions.act_window']._for_xml_id('account.action_move_out_invoice_type')
+action['domain'] = [('student_id', '!=', False), ('move_type', 'in', ('out_invoice', 'out_refund'))]
+action['context'] = {'default_move_type': 'out_invoice', 'school_invoice_list': True}
+        </field>
+    </record>
+</odoo>

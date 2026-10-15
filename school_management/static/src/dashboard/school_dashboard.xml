@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="school_management.SchoolChart">
+        <div class="o_school_chart" t-attf-style="height: {{ props.height }}px;">
+            <canvas t-ref="canvas" role="img" t-att-aria-label="props.ariaLabel"/>
+        </div>
+    </t>
+
+    <t t-name="school_management.Dashboard">
+        <div t-attf-class="o_action o_school_dashboard {{ isDark ? 'o_sd_dark' : '' }}">
+            <t t-set="d" t-value="state.data"/>
+
+            <!-- Header and filters, in one row above everything -->
+            <div class="o_sd_header">
+                <div>
+                    <h1 class="o_sd_title">
+                        <t t-if="d and d.school_name"><t t-out="d.school_name"/> <span class="o_sd_title_suffix">Dashboard</span></t>
+                        <t t-else="">School Dashboard</t>
+                    </h1>
+                    <div class="o_sd_subtitle">
+                        <t t-if="d and d.term">Term: <t t-out="d.term.name"/></t>
+                        <t t-else="">No academic term covers today</t>
+                    </div>
+                </div>
+                <div class="o_sd_filters">
+                    <select t-if="d and d.terms.length" class="form-select form-select-sm" aria-label="Term"
+                            t-on-change="onTermChange">
+                        <t t-foreach="d.terms" t-as="term" t-key="term.id">
+                            <option t-att-value="term.id" t-att-selected="term.id === state.termId" t-out="term.name"/>
+                        </t>
+                    </select>
+                    <button class="btn btn-sm btn-secondary" t-on-click="() => this.load()" title="Refresh">
+                        <i t-attf-class="fa fa-refresh {{ state.loading ? 'fa-spin' : '' }}"/>
+                    </button>
+                </div>
+            </div>
+
+            <div t-if="!d" class="o_sd_loading"><i class="fa fa-circle-o-notch fa-spin"/> Loading…</div>
+            <t t-else="">
+
+            <!-- KPI row: one hero figure, then stat tiles -->
+            <div class="o_sd_kpis">
+                <button t-if="d.can.students" class="o_sd_card o_sd_hero" t-on-click="() => this.openStudents()">
+                    <div class="o_sd_label">Enrolled students</div>
+                    <div class="o_sd_hero_value" t-out="num(d.students.enrolled)"/>
+                    <div class="o_sd_split">
+                        <span><b t-out="num(d.students.boys)"/> boys</span>
+                        <span><b t-out="num(d.students.girls)"/> girls</span>
+                        <span><b t-out="num(d.students.day)"/> day</span>
+                        <span><b t-out="num(d.students.boarders)"/> boarders</span>
+                    </div>
+                </button>
+
+                <button t-if="d.can.academics" class="o_sd_card o_sd_tile"
+                        t-on-click="() => this.openAction('school_management.action_school_attendance')">
+                    <div class="o_sd_label"><i class="fa fa-calendar-check-o"/> Attendance today</div>
+                    <div class="o_sd_value" t-out="pct(d.attendance.today_rate)"/>
+                    <div class="o_sd_meta">
+                        <t t-if="d.attendance.today_marked"><t t-out="num(d.attendance.absent_today)"/> absent of <t t-out="num(d.attendance.today_marked)"/> marked</t>
+                        <t t-elif="d.attendance.school_day">No register confirmed yet</t>
+                        <t t-else="">Not a school day</t>
+                    </div>
+                </button>
+
+                <button t-if="d.can.fees" class="o_sd_card o_sd_tile" t-on-click="() => this.openTermInvoices()">
+                    <div class="o_sd_label"><i class="fa fa-money"/> Fees collected this term</div>
+                    <div class="o_sd_value" t-out="money(d.fees.collected)"/>
+                    <div class="o_sd_meta">
+                        <t t-if="d.fees.billed"><t t-out="pct(d.fees.rate)"/> of <t t-out="money(d.fees.billed)"/> billed</t>
+                        <t t-else="">No invoices posted for this term</t>
+                    </div>
+                </button>
+
+                <button t-if="d.can.fees" class="o_sd_card o_sd_tile" t-on-click="() => this.openOutstanding()">
+                    <div class="o_sd_label"><i class="fa fa-exclamation-circle"/> Outstanding fees</div>
+                    <div class="o_sd_value" t-out="money(d.fees.outstanding_total)"/>
+                    <div class="o_sd_meta">All terms, posted invoices</div>
+                </button>
+
+                <button t-if="d.can.students" class="o_sd_card o_sd_tile"
+                        t-att-disabled="!d.can.staff"
+                        t-on-click="() => d.can.staff and this.openAction('school_management.action_school_staff')">
+                    <div class="o_sd_label"><i class="fa fa-users"/> Staff</div>
+                    <div class="o_sd_value" t-out="num(d.students.teachers + d.students.support_staff)"/>
+                    <div class="o_sd_meta">
+                        <t t-out="num(d.students.teachers)"/> teaching · <t t-out="num(d.students.support_staff)"/> support<t t-if="d.students.ratio"> · <t t-out="d.students.ratio"/> students per teacher</t>
+                    </div>
+                </button>
+
+                <button t-if="d.can.records" class="o_sd_card o_sd_tile" t-on-click="() => this.openAdmissions(['submitted', 'review'])">
+                    <div class="o_sd_label"><i class="fa fa-user-plus"/> Admissions to decide</div>
+                    <div class="o_sd_value" t-out="num(d.admissions.pending)"/>
+                    <div class="o_sd_meta"><t t-out="num(d.admissions.accepted)"/> accepted, awaiting enrolment</div>
+                </button>
+
+                <button t-if="d.can.library" class="o_sd_card o_sd_tile" t-on-click="() => this.openLoans(['overdue'])">
+                    <div class="o_sd_label"><i class="fa fa-book"/> Overdue books</div>
+                    <div class="o_sd_value" t-out="num(d.library.overdue)"/>
+                    <div class="o_sd_meta"><t t-out="num(d.library.out)"/> books currently out</div>
+                </button>
+            </div>
+
+            <!-- Charts -->
+            <div class="o_sd_grid">
+                <section t-if="d.can.students" class="o_sd_card o_sd_panel">
+                    <header class="o_sd_panel_head">
+                        <h2>Enrolment by grade</h2>
+                        <a href="#" t-on-click.prevent="() => this.openStudents()">View students</a>
+                    </header>
+                    <SchoolChart t-if="charts.enrolment" config="charts.enrolment" ariaLabel="'Enrolled students per grade level, boys and girls'"/>
+                    <div t-else="" class="o_sd_empty">No enrolled students yet.</div>
+                </section>
+
+                <section t-if="d.can.academics" class="o_sd_card o_sd_panel">
+                    <header class="o_sd_panel_head">
+                        <h2>Attendance trend</h2>
+                        <a href="#" t-on-click.prevent="() => this.openAction('school_management.action_school_attendance')">View registers</a>
+                    </header>
+                    <div class="o_sd_panel_sub">Share of students present or late, last 14 register days</div>
+                    <SchoolChart t-if="charts.attendance" config="charts.attendance" ariaLabel="'Daily attendance rate, last 14 register days'"/>
+                    <div t-else="" class="o_sd_empty">No confirmed registers in the last 60 days.</div>
+                </section>
+
+                <section t-if="d.can.fees" class="o_sd_card o_sd_panel">
+                    <header class="o_sd_panel_head">
+                        <h2>Fees by class</h2>
+                        <a href="#" t-on-click.prevent="() => this.openTermInvoices()">View invoices</a>
+                    </header>
+                    <div class="o_sd_panel_sub">Collected and outstanding on this term's posted invoices</div>
+                    <SchoolChart t-if="charts.fees" config="charts.fees" ariaLabel="'Fees collected and outstanding per class for the term'"/>
+                    <div t-else="" class="o_sd_empty">No posted invoices for this term.</div>
+                </section>
+
+                <section t-if="d.can.academics" class="o_sd_card o_sd_panel">
+                    <header class="o_sd_panel_head">
+                        <h2>Mean score by class</h2>
+                        <a href="#" t-on-click.prevent="() => this.openAction('school_management.action_school_report_card')">View report cards</a>
+                    </header>
+                    <div class="o_sd_panel_sub">Average of marked results this term</div>
+                    <SchoolChart t-if="charts.scores" config="charts.scores" ariaLabel="'Mean exam score per class for the term'"/>
+                    <div t-else="" class="o_sd_empty">No marked results for this term yet.</div>
+                </section>
+            </div>
+
+            <!-- Needs attention -->
+            <div class="o_sd_grid o_sd_grid_3">
+                <section t-if="d.can.academics" class="o_sd_card o_sd_panel">
+                    <header class="o_sd_panel_head">
+                        <h2>Registers not taken today</h2>
+                        <span class="o_sd_count" t-out="d.pending_registers.length"/>
+                    </header>
+                    <ul t-if="d.pending_registers.length" class="o_sd_list">
+                        <li t-foreach="d.pending_registers" t-as="cls" t-key="cls.id">
+                            <a href="#" t-on-click.prevent="() => this.openRegister(cls.id, cls.name)" t-out="cls.name"/>
+                        </li>
+                    </ul>
+                    <div t-elif="d.attendance.school_day" class="o_sd_empty o_sd_ok"><i class="fa fa-check-circle"/> All registers confirmed</div>
+                    <div t-else="" class="o_sd_empty">Not a school day.</div>
+                </section>
+
+                <section t-if="d.can.academics" class="o_sd_card o_sd_panel">
+                    <header class="o_sd_panel_head">
+                        <h2>Exams being marked</h2>
+                        <span class="o_sd_count" t-out="d.exams_marking.length"/>
+                    </header>
+                    <ul t-if="d.exams_marking.length" class="o_sd_list">
+                        <li t-foreach="d.exams_marking" t-as="exam" t-key="exam.id">
+                            <a href="#" t-on-click.prevent="() => this.openExamResults(exam.id, exam.name)">
+                                <span t-out="exam.name"/> <span class="o_sd_muted">· <t t-out="exam.class"/></span>
+                            </a>
+                            <span t-if="exam.unmarked" class="o_sd_status o_sd_status_warning">
+                                <i class="fa fa-pencil"/> <t t-out="exam.unmarked"/> unmarked
+                            </span>
+                            <span t-else="" class="o_sd_status o_sd_status_good"><i class="fa fa-check"/> ready</span>
+                        </li>
+                    </ul>
+                    <div t-else="" class="o_sd_empty">No exams in marking for this term.</div>
+                </section>
+
+                <section t-if="d.can.fees" class="o_sd_card o_sd_panel">
+                    <header class="o_sd_panel_head">
+                        <h2>Highest fee balances</h2>
+                    </header>
+                    <ul t-if="d.top_balances.length" class="o_sd_list">
+                        <li t-foreach="d.top_balances" t-as="row" t-key="row.id">
+                            <a href="#" t-on-click.prevent="() => this.openStudent(row.id)">
+                                <span t-out="row.name"/> <span class="o_sd_muted">· <t t-out="row.class"/></span>
+                            </a>
+                            <span class="o_sd_amount" t-out="money(row.balance, false)"/>
+                        </li>
+                    </ul>
+                    <div t-else="" class="o_sd_empty o_sd_ok"><i class="fa fa-check-circle"/> No outstanding balances</div>
+                </section>
+
+                <section t-if="d.can.students" class="o_sd_card o_sd_panel">
+                    <header class="o_sd_panel_head"><h2>Capacity</h2></header>
+                    <t t-foreach="[['Hostel beds', d.occupancy.hostel], ['Transport seats', d.occupancy.transport]]"
+                       t-as="item" t-key="item[0]">
+                        <t t-set="m" t-value="meter(item[1].used, item[1].total)"/>
+                        <div class="o_sd_meter">
+                            <div class="o_sd_meter_head">
+                                <span t-out="item[0]"/>
+                                <span t-if="item[1].total"><b t-out="num(item[1].used)"/> / <t t-out="num(item[1].total)"/>
+                                    <span t-attf-class="o_sd_status o_sd_status_{{ m.level }}">
+                                        <i t-attf-class="fa {{ m.level === 'good' ? 'fa-check' : 'fa-exclamation-triangle' }}"/>
+                                        <t t-out="m.pct"/>%
+                                    </span>
+                                </span>
+                                <span t-else="" class="o_sd_muted">Not set up</span>
+                            </div>
+                            <div t-if="item[1].total" t-attf-class="o_sd_meter_track o_sd_meter_{{ m.level }}">
+                                <div class="o_sd_meter_fill" t-attf-style="width: {{ m.width }};"/>
+                            </div>
+                        </div>
+                    </t>
+                </section>
+            </div>
+            </t>
+        </div>
+    </t>
+</templates>

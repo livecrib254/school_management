@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- A4 landscape: five weekday columns do not fit legibly in portrait. -->
+    <record id="paperformat_timetable" model="report.paperformat">
+        <field name="name">A4 Landscape (Timetable)</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Not bound to a print menu: the weekly grid calls it with the class or teacher in `data`. -->
+    <record id="action_report_timetable" model="ir.actions.report">
+        <field name="name">Timetable</field>
+        <field name="model">school.timetable.entry</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">school_management.report_timetable</field>
+        <field name="report_file">school_management.report_timetable</field>
+        <field name="paperformat_id" ref="paperformat_timetable"/>
+    </record>
+
+    <template id="report_timetable">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <t t-set="teacher_mode" t-value="grid['mode'] == 'teacher'"/>
+                    <h4 t-if="company.school_name" class="text-center mb-1" t-out="company.school_name"/>
+                    <h3 class="text-center mb-1">
+                        Timetable<t t-if="grid['current']"> - <t t-out="grid['current']['name']"/></t>
+                    </h3>
+                    <p class="text-center text-muted mb-3">
+                        <t t-if="teacher_mode">Teacher</t><t t-else="">Class</t>
+                        <t t-if="grid['year']"> - <t t-out="grid['year']['name']"/></t>
+                    </p>
+
+                    <p t-if="not grid['current'] or not rows" class="text-muted">Nothing to print.</p>
+                    <table t-else="" class="table table-sm table-bordered" style="table-layout: fixed; font-size: 11px;">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 14%;">Period</th>
+                                <th t-foreach="grid['weekdays']" t-as="day" class="text-center" t-out="day['name']"/>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="rows" t-as="row" style="page-break-inside: avoid;">
+                                <td>
+                                    <strong t-out="row['name']"/><br/>
+                                    <span class="text-muted" t-out="row['time']"/>
+                                </td>
+                                <td t-if="row['is_break']" t-att-colspan="len(grid['weekdays'])"
+                                    class="text-center text-muted align-middle" style="background-color: #f2f2f2;">
+                                    <t t-out="row['name']"/>
+                                </td>
+                                <t t-else="">
+                                    <td t-foreach="row['cells']" t-as="lesson" class="text-center align-middle">
+                                        <t t-if="lesson">
+                                            <strong t-out="lesson['subject']"/><br/>
+                                            <span t-out="(lesson['class'] if teacher_mode else lesson['teacher']) or '-'"/>
+                                            <t t-if="lesson['room']"><br/><span class="text-muted" t-out="lesson['room']"/></t>
+                                        </t>
+                                    </td>
+                                </t>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

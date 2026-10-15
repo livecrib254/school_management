@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Grade scales -->
+    <record id="view_school_scale_list" model="ir.ui.view">
+        <field name="name">school.grade.scale.list</field>
+        <field name="model">school.grade.scale</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="education_system"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_scale_form" model="ir.ui.view">
+        <field name="name">school.grade.scale.form</field>
+        <field name="model">school.grade.scale</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="education_system"/>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="min_mark"/>
+                            <field name="grade"/>
+                            <field name="points"/>
+                            <field name="descriptor"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_school_scale" model="ir.actions.act_window">
+        <field name="name">Grade Scales</field>
+        <field name="res_model">school.grade.scale</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Exams -->
+    <record id="view_school_exam_list" model="ir.ui.view">
+        <field name="name">school.exam.list</field>
+        <field name="model">school.exam</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="exam_type"/>
+                <field name="class_id"/>
+                <field name="term_id"/>
+                <field name="date"/>
+                <field name="max_mark"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_exam_form" model="ir.ui.view">
+        <field name="name">school.exam.form</field>
+        <field name="model">school.exam</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_generate_results" type="object" string="Generate Mark Sheet" class="btn-primary" invisible="state == 'done'"/>
+                    <button name="action_done" type="object" string="Mark Done" invisible="state != 'ongoing'"/>
+                    <button name="action_draft" type="object" string="Reset to Draft" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_results" type="object" class="oe_stat_button" icon="fa-pencil-square-o">
+                            <field name="result_count" widget="statinfo" string="Results"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="exam_type"/>
+                            <field name="class_id"/>
+                        </group>
+                        <group>
+                            <field name="term_id"/>
+                            <field name="date"/>
+                            <field name="max_mark"/>
+                            <field name="weight"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_school_exam_search" model="ir.ui.view">
+        <field name="name">school.exam.search</field>
+        <field name="model">school.exam</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="class_id"/>
+                <field name="term_id"/>
+                <group>
+                    <filter name="group_term" string="Term" context="{'group_by': 'term_id'}"/>
+                    <filter name="group_class" string="Class" context="{'group_by': 'class_id'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'exam_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_exam" model="ir.actions.act_window">
+        <field name="name">Exams</field>
+        <field name="res_model">school.exam</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Results -->
+    <record id="view_school_result_list" model="ir.ui.view">
+        <field name="name">school.exam.result.list</field>
+        <field name="model">school.exam.result</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" decoration-muted="is_absent" decoration-warning="not mark_entered and not is_absent">
+                <field name="exam_state" column_invisible="1"/>
+                <field name="exam_id" column_invisible="context.get('default_exam_id')" readonly="exam_state == 'done'"/>
+                <field name="subject_id" readonly="exam_state == 'done'"/>
+                <field name="student_id" readonly="exam_state == 'done'"/>
+                <field name="mark" readonly="is_absent or exam_state == 'done'"/>
+                <field name="max_mark"/>
+                <field name="mark_entered" readonly="is_absent or exam_state == 'done'"/>
+                <field name="is_absent" readonly="exam_state == 'done'"/>
+                <field name="percentage" string="%"/>
+                <field name="grade"/>
+                <field name="points"/>
+                <field name="remarks"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_result_search" model="ir.ui.view">
+        <field name="name">school.exam.result.search</field>
+        <field name="model">school.exam.result</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="subject_id"/>
+                <field name="exam_id"/>
+                <field name="class_id"/>
+                <filter name="unmarked" string="Not Marked" domain="[('mark_entered', '=', False), ('is_absent', '=', False)]"/>
+                <group>
+                    <filter name="group_subject" string="Subject" context="{'group_by': 'subject_id'}"/>
+                    <filter name="group_student" string="Student" context="{'group_by': 'student_id'}"/>
+                    <filter name="group_exam" string="Exam" context="{'group_by': 'exam_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_result" model="ir.actions.act_window">
+        <field name="name">Results</field>
+        <field name="res_model">school.exam.result</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Report cards -->
+    <record id="view_school_report_card_list" model="ir.ui.view">
+        <field name="name">school.report.card.list</field>
+        <field name="model">school.report.card</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="student_id"/>
+                <field name="class_id"/>
+                <field name="term_id"/>
+                <field name="mean_percentage"/>
+                <field name="mean_grade"/>
+                <field name="position"/>
+                <field name="class_size"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_report_card_form" model="ir.ui.view">
+        <field name="name">school.report.card.form</field>
+        <field name="model">school.report.card</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_compute" type="object" string="Compute Results" class="btn-primary" invisible="state == 'published'"/>
+                    <button name="action_publish" type="object" string="Publish" invisible="state == 'published'"/>
+                    <button name="action_draft" type="object" string="Unpublish" invisible="state == 'draft'"/>
+                    <button name="%(action_report_card)d" type="action" string="Print"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id"/>
+                            <field name="class_id"/>
+                            <field name="term_id"/>
+                        </group>
+                        <group>
+                            <field name="mean_percentage"/>
+                            <field name="mean_grade"/>
+                            <field name="mean_descriptor"/>
+                            <field name="total_points"/>
+                            <field name="position"/>
+                            <field name="class_size"/>
+                            <field name="attendance_percent"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state == 'published'">
+                        <list editable="bottom" create="0">
+                            <field name="subject_id" readonly="1"/>
+                            <field name="percentage" readonly="1"/>
+                            <field name="grade" readonly="1"/>
+                            <field name="points" readonly="1"/>
+                            <field name="descriptor" readonly="1"/>
+                            <field name="teacher_comment"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="class_teacher_comment" readonly="state == 'published'"/>
+                        <field name="principal_comment" readonly="state == 'published'"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_school_report_card_search" model="ir.ui.view">
+        <field name="name">school.report.card.search</field>
+        <field name="model">school.report.card</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="class_id"/>
+                <field name="term_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="published" string="Published" domain="[('state', '=', 'published')]"/>
+                <group>
+                    <filter name="group_class" string="Class" context="{'group_by': 'class_id'}"/>
+                    <filter name="group_term" string="Term" context="{'group_by': 'term_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_report_card" model="ir.actions.act_window">
+        <field name="name">Report Cards</field>
+        <field name="res_model">school.report.card</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_school_student_kanban" model="ir.ui.view">
+        <field name="name">school.student.kanban</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex">
+                            <field name="image_128" widget="image" class="o_image_64_cover me-3" options="{'preview_image': 'image_128'}"/>
+                            <div>
+                                <field name="name" class="fw-bold fs-5"/>
+                                <div><field name="admission_no"/></div>
+                                <div class="text-muted"><field name="class_id"/></div>
+                                <field name="state" widget="badge"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_school_student_list" model="ir.ui.view">
+        <field name="name">school.student.list</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="admission_no"/>
+                <field name="name"/>
+                <field name="gender"/>
+                <field name="age"/>
+                <field name="class_id"/>
+                <field name="student_type"/>
+                <field name="guardian_phone"/>
+                <field name="fee_balance" sum="Total"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_student_form" model="ir.ui.view">
+        <field name="name">school.student.form</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_enroll" type="object" string="Enrol" class="btn-primary" invisible="state not in ('draft', 'suspended')"/>
+                    <button name="action_suspend" type="object" string="Suspend" invisible="state != 'enrolled'"/>
+                    <button name="action_graduate" type="object" string="Graduate" invisible="state != 'enrolled'"/>
+                    <button name="action_transfer" type="object" string="Transferred Out" invisible="state != 'enrolled'"/>
+                    <button name="action_withdraw" type="object" string="Withdraw" invisible="state not in ('enrolled', 'suspended')"/>
+                    <button name="action_reset" type="object" string="Reset to Draft" invisible="state in ('draft', 'enrolled')"/>
+                    <button name="action_message_guardian" type="object" string="Message Guardian" icon="fa-envelope-o"
+                            invisible="not primary_guardian_id"
+                            groups="school_management.group_school_teacher,school_management.group_school_registrar,school_management.group_school_accountant"/>
+                    <field name="primary_guardian_id" invisible="1"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,enrolled,graduated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                groups="school_management.group_school_accountant">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                        <button name="action_view_report_cards" type="object" class="oe_stat_button" icon="fa-graduation-cap"
+                                groups="school_management.group_school_teacher,school_management.group_school_registrar">
+                            <field name="report_card_count" widget="statinfo" string="Report Cards"/>
+                        </button>
+                        <button name="action_view_attendance" type="object" class="oe_stat_button" icon="fa-calendar-check-o"
+                                groups="school_management.group_school_teacher,school_management.group_school_registrar">
+                            <field name="attendance_rate" widget="statinfo" string="Attendance %"/>
+                        </button>
+                        <button name="action_view_loans" type="object" class="oe_stat_button" icon="fa-book"
+                                groups="school_management.group_school_teacher,school_management.group_school_registrar,school_management.group_school_librarian">
+                            <field name="open_loan_count" widget="statinfo" string="Books Out"/>
+                        </button>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Student full name"/></h1>
+                        <h3><field name="admission_no"/></h3>
+                    </div>
+                    <group>
+                        <group string="Personal">
+                            <field name="gender"/>
+                            <field name="date_of_birth"/>
+                            <field name="age"/>
+                            <field name="nationality_id"/>
+                            <field name="birth_cert_no"/>
+                            <field name="upi"/>
+                        </group>
+                        <group string="School">
+                            <field name="class_id"/>
+                            <field name="level_id"/>
+                            <field name="student_type"/>
+                            <field name="admission_date"/>
+                            <field name="previous_school"/>
+                            <field name="fee_discount_percent"/>
+                            <field name="fee_balance"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Guardians" name="guardians">
+                            <field name="guardian_ids">
+                                <list editable="bottom">
+                                    <field name="partner_id"
+                                           context="{'default_is_school_guardian': True, 'form_view_ref': 'school_management.view_school_guardian_form'}"/>
+                                    <field name="relation"/>
+                                    <field name="phone"/>
+                                    <field name="email"/>
+                                    <field name="is_primary"/>
+                                    <field name="is_fee_payer"/>
+                                    <field name="is_emergency"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Health &amp; Support" name="health">
+                            <group>
+                                <field name="medical_notes"/>
+                                <field name="special_needs"/>
+                            </group>
+                        </page>
+                        <page string="Class History" name="history">
+                            <field name="enrollment_ids" readonly="1">
+                                <list>
+                                    <field name="date_from"/>
+                                    <field name="class_id"/>
+                                    <field name="year_id"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Transport &amp; Hostel" name="transport_hostel">
+                            <separator string="Transport"/>
+                            <field name="transport_subscription_ids" readonly="1">
+                                <list>
+                                    <field name="route_id"/>
+                                    <field name="stop_id"/>
+                                    <field name="date_from"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                            <separator string="Hostel"/>
+                            <field name="hostel_allocation_ids" readonly="1">
+                                <list>
+                                    <field name="hostel_id"/>
+                                    <field name="room_id"/>
+                                    <field name="date_from"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_school_student_search" model="ir.ui.view">
+        <field name="name">school.student.search</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('admission_no', 'ilike', self)]" string="Name / Admission No."/>
+                <field name="upi"/>
+                <field name="class_id"/>
+                <filter name="enrolled" string="Enrolled" domain="[('state', '=', 'enrolled')]"/>
+                <filter name="boarders" string="Boarders" domain="[('student_type', '=', 'boarding')]"/>
+                <filter name="day_scholars" string="Day Scholars" domain="[('student_type', '=', 'day')]"/>
+                <separator/>
+                <filter name="owes_fees" string="Owes Fees" domain="[('fee_balance', '>', 0)]"
+                        groups="school_management.group_school_accountant"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_class" string="Class" context="{'group_by': 'class_id'}"/>
+                    <filter name="group_level" string="Grade Level" context="{'group_by': 'level_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_gender" string="Gender" context="{'group_by': 'gender'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_school_student" model="ir.actions.act_window">
+        <field name="name">Students</field>
+        <field name="res_model">school.student</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_enrolled': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Register your first student</p>
+            <p>Students are normally created by enrolling an accepted admission application.</p>
+        </field>
+    </record>
+
+    <!-- Guardians: contacts flagged as parents/guardians, with school-only views.
+         High priority numbers keep the standard contact views as the defaults elsewhere. -->
+    <record id="view_school_guardian_list" model="ir.ui.view">
+        <field name="name">res.partner.school.guardian.list</field>
+        <field name="model">res.partner</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="guardian_national_id"/>
+                <field name="guardian_occupation" optional="hide"/>
+                <field name="school_student_count" string="Children"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_guardian_form" model="ir.ui.view">
+        <field name="name">res.partner.school.guardian.form</field>
+        <field name="model">res.partner</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" required="1" placeholder="Parent / guardian full name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Identity">
+                            <field name="guardian_national_id"/>
+                            <field name="guardian_occupation"/>
+                            <field name="is_school_guardian" invisible="1"/>
+                        </group>
+                        <group string="Contact">
+                            <field name="phone" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <label for="street" string="Address"/>
+                            <div class="o_address_format">
+                                <field name="street" placeholder="Street..." class="o_address_street"/>
+                                <field name="city" placeholder="Town / City" class="o_address_city"/>
+                                <field name="country_id" placeholder="Country" class="o_address_country"
+                                       options="{'no_open': True, 'no_create': True}"/>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Children" name="children">
+                            <field name="guardian_line_ids" readonly="1">
+                                <list>
+                                    <field name="student_id"/>
+                                    <field name="relation"/>
+                                    <field name="is_primary"/>
+                                    <field name="is_fee_payer"/>
+                                    <field name="is_emergency"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_school_guardian_search" model="ir.ui.view">
+        <field name="name">res.partner.school.guardian.search</field>
+        <field name="model">res.partner</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Name / Phone / ID"
+                       filter_domain="['|', '|', '|', ('name', 'ilike', self), ('phone', 'ilike', self), ('email', 'ilike', self), ('guardian_national_id', 'ilike', self)]"/>
+                <field name="guardian_line_ids" string="Child" filter_domain="[('guardian_line_ids.student_id.name', 'ilike', self)]"/>
+                <filter name="no_children" string="Not Linked to a Student" domain="[('guardian_line_ids', '=', False)]"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_school_guardian" model="ir.actions.act_window">
+        <field name="name">Parents &amp; Guardians</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_school_guardian', '=', True)]</field>
+        <field name="context">{'default_is_school_guardian': True}</field>
+        <field name="search_view_id" ref="view_school_guardian_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_school_guardian_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_school_guardian_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a parent or guardian</p>
+            <p>Guardians are also created automatically when an admission is enrolled. Link them to students on the student's Guardians tab.</p>
+        </field>
+    </record>
+</odoo>

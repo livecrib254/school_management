@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_school_admission_list" model="ir.ui.view">
+        <field name="name">school.admission.list</field>
+        <field name="model">school.admission</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'enrolled'" decoration-danger="state == 'rejected'">
+                <field name="name"/>
+                <field name="applicant_name"/>
+                <field name="level_id"/>
+                <field name="guardian_name"/>
+                <field name="guardian_phone"/>
+                <field name="application_date"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_admission_form" model="ir.ui.view">
+        <field name="name">school.admission.form</field>
+        <field name="model">school.admission</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_review" type="object" string="Start Review" invisible="state != 'submitted'"/>
+                    <button name="action_accept" type="object" string="Accept" class="btn-primary" invisible="state not in ('submitted', 'review')"/>
+                    <button name="action_reject" type="object" string="Reject" invisible="state not in ('submitted', 'review')"/>
+                    <button name="action_enroll" type="object" string="Enrol Student" class="btn-primary" invisible="state != 'accepted'"/>
+                    <button name="action_reset" type="object" string="Reset to Draft" invisible="state not in ('rejected', 'submitted', 'review')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,review,accepted,enrolled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_student" type="object" class="oe_stat_button" icon="fa-user" invisible="not student_id">
+                            <div class="o_stat_info"><span class="o_stat_text">Student</span></div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Applicant">
+                            <field name="applicant_name"/>
+                            <field name="gender"/>
+                            <field name="date_of_birth"/>
+                            <field name="previous_school"/>
+                            <field name="previous_grade"/>
+                            <field name="entry_test_score"/>
+                        </group>
+                        <group string="Admission">
+                            <field name="level_id"/>
+                            <field name="year_id"/>
+                            <field name="class_id"/>
+                            <field name="student_type"/>
+                            <field name="application_date"/>
+                            <field name="student_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Parent / Guardian">
+                        <group>
+                            <field name="guardian_name"/>
+                            <field name="guardian_relation"/>
+                            <field name="guardian_national_id"/>
+                            <field name="guardian_occupation"/>
+                        </group>
+                        <group>
+                            <field name="guardian_phone"/>
+                            <field name="guardian_email"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Interview notes, documents received, special requirements..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_school_admission_search" model="ir.ui.view">
+        <field name="name">school.admission.search</field>
+        <field name="model">school.admission</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="applicant_name"/>
+                <field name="name"/>
+                <field name="guardian_name"/>
+                <filter name="pending" string="Pending Decision" domain="[('state', 'in', ('submitted', 'review'))]"/>
+                <filter name="accepted" string="Accepted" domain="[('state', '=', 'accepted')]"/>
+                <group>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_level" string="Applying For" context="{'group_by': 'level_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_school_admission" model="ir.actions.act_window">
+        <field name="name">Admission Applications</field>
+        <field name="res_model">school.admission</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

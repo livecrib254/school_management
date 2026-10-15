@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_school_hostel_list" model="ir.ui.view">
+        <field name="name">school.hostel.list</field>
+        <field name="model">school.hostel</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="gender"/>
+                <field name="warden_id"/>
+                <field name="total_beds"/>
+                <field name="occupied_beds"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_hostel_form" model="ir.ui.view">
+        <field name="name">school.hostel.form</field>
+        <field name="model">school.hostel</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="gender"/>
+                            <field name="warden_id"/>
+                        </group>
+                        <group>
+                            <field name="total_beds"/>
+                            <field name="occupied_beds"/>
+                        </group>
+                    </group>
+                    <field name="room_ids">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="beds"/>
+                            <field name="occupied"/>
+                            <field name="available"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_school_hostel" model="ir.actions.act_window">
+        <field name="name">Hostels</field>
+        <field name="res_model">school.hostel</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_school_room_list" model="ir.ui.view">
+        <field name="name">school.hostel.room.list</field>
+        <field name="model">school.hostel.room</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="hostel_id"/>
+                <field name="name"/>
+                <field name="beds"/>
+                <field name="occupied"/>
+                <field name="available"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_school_room" model="ir.actions.act_window">
+        <field name="name">Rooms</field>
+        <field name="res_model">school.hostel.room</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_school_allocation_list" model="ir.ui.view">
+        <field name="name">school.hostel.allocation.list</field>
+        <field name="model">school.hostel.allocation</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="student_id"/>
+                <field name="room_id"/>
+                <field name="hostel_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_allocation_search" model="ir.ui.view">
+        <field name="name">school.hostel.allocation.search</field>
+        <field name="model">school.hostel.allocation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="hostel_id"/>
+                <filter name="active" string="Active" domain="[('state', '=', 'active')]"/>
+                <group>
+                    <filter name="group_hostel" string="Hostel" context="{'group_by': 'hostel_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_allocation" model="ir.actions.act_window">
+        <field name="name">Bed Allocations</field>
+        <field name="res_model">school.hostel.allocation</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+</odoo>

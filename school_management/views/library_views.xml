@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_school_book_list" model="ir.ui.view">
+        <field name="name">school.book.list</field>
+        <field name="model">school.book</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="author"/>
+                <field name="isbn"/>
+                <field name="subject_id"/>
+                <field name="shelf"/>
+                <field name="copies_total"/>
+                <field name="copies_available"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_book_form" model="ir.ui.view">
+        <field name="name">school.book.form</field>
+        <field name="model">school.book</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="author"/>
+                            <field name="publisher"/>
+                            <field name="isbn"/>
+                        </group>
+                        <group>
+                            <field name="subject_id"/>
+                            <field name="shelf"/>
+                            <field name="copies_total"/>
+                            <field name="copies_available"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_school_book_search" model="ir.ui.view">
+        <field name="name">school.book.search</field>
+        <field name="model">school.book</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', '|', ('name', 'ilike', self), ('author', 'ilike', self), ('isbn', 'ilike', self)]" string="Title / Author / ISBN"/>
+                <field name="subject_id"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_book" model="ir.actions.act_window">
+        <field name="name">Books</field>
+        <field name="res_model">school.book</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_school_loan_list" model="ir.ui.view">
+        <field name="name">school.library.loan.list</field>
+        <field name="model">school.library.loan</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'overdue'" decoration-muted="state == 'returned'">
+                <field name="book_id"/>
+                <field name="borrower_type"/>
+                <field name="student_id"/>
+                <field name="employee_id"/>
+                <field name="date_issued"/>
+                <field name="date_due"/>
+                <field name="date_returned"/>
+                <field name="fine_amount"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_loan_form" model="ir.ui.view">
+        <field name="name">school.library.loan.form</field>
+        <field name="model">school.library.loan</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_return" type="object" string="Return Book" class="btn-primary" invisible="state not in ('issued', 'overdue')"/>
+                    <button name="action_lost" type="object" string="Mark Lost" invisible="state not in ('issued', 'overdue')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="issued,returned"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="book_id"/>
+                            <field name="borrower_type"/>
+                            <field name="student_id" invisible="borrower_type != 'student'" required="borrower_type == 'student'"/>
+                            <field name="employee_id" invisible="borrower_type != 'staff'" required="borrower_type == 'staff'"/>
+                        </group>
+                        <group>
+                            <field name="date_issued"/>
+                            <field name="date_due"/>
+                            <field name="date_returned"/>
+                            <field name="fine_amount"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_school_loan_search" model="ir.ui.view">
+        <field name="name">school.library.loan.search</field>
+        <field name="model">school.library.loan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="book_id"/>
+                <field name="student_id"/>
+                <field name="employee_id"/>
+                <filter name="out" string="Currently Out" domain="[('state', 'in', ('issued', 'overdue'))]"/>
+                <filter name="overdue" string="Overdue" domain="[('state', '=', 'overdue')]"/>
+                <group>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_book" string="Book" context="{'group_by': 'book_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_loan" model="ir.actions.act_window">
+        <field name="name">Loans</field>
+        <field name="res_model">school.library.loan</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_out': 1}</field>
+    </record>
+</odoo>

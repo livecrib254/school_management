@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.school</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="80"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="School" string="School" name="school_management"
+                     groups="school_management.group_school_manager">
+                    <block title="School" name="school_identity_container">
+                        <setting id="school_name_setting" string="School name"
+                                 help="Shown as the app name, on the dashboard, report cards and the parent portal. Leave empty to keep the default name &quot;School&quot;."
+                                 company_dependent="1">
+                            <field name="school_name" placeholder="e.g. Simia Academy"/>
+                        </setting>
+                        <setting id="school_logo_setting" string="School logo"
+                                 help="Printed in the letterhead of fee invoices, report cards and all other documents. PNG or JPEG; a wide logo on a transparent or white background prints best."
+                                 company_dependent="1">
+                            <field name="school_logo" widget="image" class="w-auto" options="{'size': [0, 90]}"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_school_config_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'school_management', 'bin_size': False}</field>
+    </record>
+</odoo>

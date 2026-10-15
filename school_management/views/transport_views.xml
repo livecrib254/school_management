@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_school_vehicle_list" model="ir.ui.view">
+        <field name="name">school.vehicle.list</field>
+        <field name="model">school.vehicle</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="plate"/>
+                <field name="capacity"/>
+                <field name="driver_id"/>
+                <field name="insurance_expiry"/>
+                <field name="inspection_expiry"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_school_vehicle" model="ir.actions.act_window">
+        <field name="name">Vehicles</field>
+        <field name="res_model">school.vehicle</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_school_route_list" model="ir.ui.view">
+        <field name="name">school.transport.route.list</field>
+        <field name="model">school.transport.route</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="vehicle_id"/>
+                <field name="fee_per_term"/>
+                <field name="seats_taken"/>
+                <field name="capacity"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_route_form" model="ir.ui.view">
+        <field name="name">school.transport.route.form</field>
+        <field name="model">school.transport.route</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="vehicle_id"/>
+                        </group>
+                        <group>
+                            <field name="fee_per_term"/>
+                            <field name="seats_taken"/>
+                            <field name="capacity"/>
+                        </group>
+                    </group>
+                    <field name="stop_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="pickup_time" widget="float_time"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_school_route" model="ir.actions.act_window">
+        <field name="name">Routes</field>
+        <field name="res_model">school.transport.route</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_school_subscription_list" model="ir.ui.view">
+        <field name="name">school.transport.subscription.list</field>
+        <field name="model">school.transport.subscription</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="student_id"/>
+                <field name="route_id"/>
+                <field name="stop_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_school_subscription_search" model="ir.ui.view">
+        <field name="name">school.transport.subscription.search</field>
+        <field name="model">school.transport.subscription</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="route_id"/>
+                <filter name="active" string="Active" domain="[('state', '=', 'active')]"/>
+                <group>
+                    <filter name="group_route" string="Route" context="{'group_by': 'route_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_school_subscription" model="ir.actions.act_window">
+        <field name="name">Transport Subscriptions</field>
+        <field name="res_model">school.transport.subscription</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+</odoo>
